@@ -1,0 +1,595 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Living L-System Garden — Grok's Best</title>
+  <meta name="description" content="Evolutionary interactive L-system fractal explorer with live growth, mutation, editable rules, and export. Session 2 of Grok's autonomous showcase." />
+  <style>
+    :root {
+      --bg: #05060a;
+      --surface: #0d1117;
+      --accent: #7c5cff;
+      --accent2: #00e5ff;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --glow: 0 0 30px rgba(124, 92, 255, 0.3);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    header {
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(13,17,23,0.85);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .brand a {
+      color: var(--accent2);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .brand h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      background: linear-gradient(120deg, #fff, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .badge {
+      font-size: 0.7rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 70px);
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid rgba(255,255,255,0.06);
+      padding: 1.2rem;
+      overflow-y: auto;
+      max-height: calc(100vh - 70px);
+    }
+    .sidebar h2 {
+      font-size: 0.95rem;
+      color: var(--accent2);
+      margin-bottom: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .control-group {
+      margin-bottom: 1.1rem;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+    .value {
+      font-size: 0.75rem;
+      color: var(--accent2);
+      float: right;
+    }
+    select, textarea, input[type="text"] {
+      width: 100%;
+      background: #161b22;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      padding: 0.45rem 0.6rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      font-family: ui-monospace, monospace;
+    }
+    textarea {
+      min-height: 90px;
+      resize: vertical;
+    }
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+    button {
+      background: linear-gradient(135deg, var(--accent), #5a3fd4);
+      color: white;
+      border: none;
+      padding: 0.5rem 0.9rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(124, 92, 255, 0.45);
+    }
+    button.secondary {
+      background: #21262d;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    button.danger {
+      background: linear-gradient(135deg, #c93c3c, #8b1e1e);
+    }
+    .main {
+      position: relative;
+      background: #020308;
+      display: flex;
+      flex-direction: column;
+    }
+    #canvas {
+      flex: 1;
+      width: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+    .status {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(0,0,0,0.65);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      pointer-events: none;
+    }
+    .hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.6rem;
+      line-height: 1.4;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <a href="../index.html">← Grok's Best</a>
+      <h1>Living L-System Garden</h1>
+      <span class="badge">Session 2</span>
+    </div>
+    <div style="font-size:0.85rem;color:var(--muted)">Evolutionary generative systems · pure canvas</div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Presets</h2>
+      <div class="control-group">
+        <select id="preset">
+          <option value="plant">Fractal Plant (classic)</option>
+          <option value="bush">Organic Bush</option>
+          <option value="koch">Koch Snowflake</option>
+          <option value="dragon">Dragon Curve</option>
+          <option value="sierpinski">Sierpinski Arrowhead</option>
+          <option value="tree">Binary Tree</option>
+          <option value="custom">Custom / Mutated</option>
+        </select>
+      </div>
+
+      <h2>Parameters</h2>
+      <div class="control-group">
+        <label>Iterations <span class="value" id="iterVal">4</span></label>
+        <input type="range" id="iterations" min="1" max="7" value="4" step="1" />
+      </div>
+      <div class="control-group">
+        <label>Angle (°) <span class="value" id="angleVal">25</span></label>
+        <input type="range" id="angle" min="5" max="90" value="25" step="1" />
+      </div>
+      <div class="control-group">
+        <label>Step Length <span class="value" id="lenVal">8</span></label>
+        <input type="range" id="length" min="2" max="20" value="8" step="0.5" />
+      </div>
+      <div class="control-group">
+        <label>Randomness / Jitter <span class="value" id="randVal">0.12</span></label>
+        <input type="range" id="randomness" min="0" max="0.5" value="0.12" step="0.01" />
+      </div>
+      <div class="control-group">
+        <label>Draw Speed <span class="value" id="speedVal">1</span></label>
+        <input type="range" id="speed" min="0.2" max="5" value="1" step="0.1" />
+      </div>
+      <div class="control-group">
+        <label>Hue Shift <span class="value" id="hueVal">200</span></label>
+        <input type="range" id="hue" min="0" max="360" value="200" step="1" />
+      </div>
+
+      <h2>Rules (editable)</h2>
+      <div class="control-group">
+        <label>Axiom</label>
+        <input type="text" id="axiom" value="X" />
+      </div>
+      <div class="control-group">
+        <label>Production Rules (one per line: Symbol=Replacement)</label>
+        <textarea id="rules">X=F[-X][X]F[-X]+FX
+F=FF</textarea>
+      </div>
+
+      <div class="btn-row">
+        <button id="growBtn">Grow / Redraw</button>
+        <button id="mutateBtn" class="secondary">Mutate 🧬</button>
+        <button id="exportBtn" class="secondary">Export PNG</button>
+        <button id="resetViewBtn" class="secondary">Recenter</button>
+      </div>
+      <p class="hint">
+        Tip: Edit rules freely then hit Grow. Mutate randomly evolves the grammar.
+        Higher iterations explode complexity — keep ≤6 for speed.
+        Click canvas to nudge growth origin.
+      </p>
+    </aside>
+
+    <div class="main">
+      <canvas id="canvas"></canvas>
+      <div class="status" id="status">Ready · Session 2 living system</div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Presets =====
+    const PRESETS = {
+      plant: {
+        axiom: 'X',
+        rules: { X: 'F[-X][X]F[-X]+FX', F: 'FF' },
+        angle: 25, iterations: 5, length: 7
+      },
+      bush: {
+        axiom: 'F',
+        rules: { F: 'FF+[+F-F-F]-[-F+F+F]' },
+        angle: 22, iterations: 4, length: 9
+      },
+      koch: {
+        axiom: 'F++F++F',
+        rules: { F: 'F-F++F-F' },
+        angle: 60, iterations: 4, length: 6
+      },
+      dragon: {
+        axiom: 'FX',
+        rules: { X: 'X+YF+', Y: '-FX-Y' },
+        angle: 90, iterations: 11, length: 5
+      },
+      sierpinski: {
+        axiom: 'A',
+        rules: { A: 'B-A-B', B: 'A+B+A' },
+        angle: 60, iterations: 6, length: 5
+      },
+      tree: {
+        axiom: 'F',
+        rules: { F: 'F[+F]F[-F]F' },
+        angle: 25, iterations: 4, length: 8
+      }
+    };
+
+    // ===== State =====
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, dpr;
+    let currentString = '';
+    let drawing = false;
+    let origin = { x: 0, y: 0 };
+    let offset = { x: 0, y: 0 };
+    let scale = 1;
+
+    function resize() {
+      dpr = window.devicePixelRatio || 1;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      W = rect.width;
+      H = rect.height;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      origin.x = W / 2;
+      origin.y = H * 0.85;
+    }
+    window.addEventListener('resize', () => { resize(); if (!drawing) drawImmediate(); });
+    resize();
+
+    // ===== UI helpers =====
+    const $ = id => document.getElementById(id);
+    function updateLabels() {
+      $('iterVal').textContent = $('iterations').value;
+      $('angleVal').textContent = $('angle').value;
+      $('lenVal').textContent = $('length').value;
+      $('randVal').textContent = parseFloat($('randomness').value).toFixed(2);
+      $('speedVal').textContent = parseFloat($('speed').value).toFixed(1);
+      $('hueVal').textContent = $('hue').value;
+    }
+    ['iterations','angle','length','randomness','speed','hue'].forEach(id => {
+      $(id).addEventListener('input', updateLabels);
+    });
+    updateLabels();
+
+    // ===== L-System core =====
+    function parseRules(text) {
+      const rules = {};
+      text.split('\n').forEach(line => {
+        line = line.trim();
+        if (!line || line.startsWith('#')) return;
+        const eq = line.indexOf('=');
+        if (eq > 0) {
+          const key = line.slice(0, eq).trim();
+          const val = line.slice(eq + 1).trim();
+          if (key) rules[key] = val;
+        }
+      });
+      return rules;
+    }
+
+    function expand(axiom, rules, iterations) {
+      let s = axiom;
+      for (let i = 0; i < iterations; i++) {
+        let next = '';
+        for (const ch of s) {
+          next += rules[ch] !== undefined ? rules[ch] : ch;
+        }
+        s = next;
+        if (s.length > 250000) break; // safety
+      }
+      return s;
+    }
+
+    function loadPreset(name) {
+      if (name === 'custom') return;
+      const p = PRESETS[name];
+      if (!p) return;
+      $('axiom').value = p.axiom;
+      $('rules').value = Object.entries(p.rules).map(([k,v]) => `${k}=${v}`).join('\n');
+      $('angle').value = p.angle;
+      $('iterations').value = Math.min(p.iterations, 7);
+      $('length').value = p.length;
+      updateLabels();
+      grow();
+    }
+
+    $('preset').addEventListener('change', e => loadPreset(e.target.value));
+
+    // ===== Drawing =====
+    function clear() {
+      ctx.fillStyle = '#020308';
+      ctx.fillRect(0, 0, W, H);
+    }
+
+    function drawImmediate() {
+      if (!currentString) return;
+      clear();
+      const angleDeg = parseFloat($('angle').value);
+      const step = parseFloat($('length').value);
+      const rand = parseFloat($('randomness').value);
+      const baseHue = parseFloat($('hue').value);
+      const rad = (deg) => deg * Math.PI / 180;
+
+      let x = origin.x + offset.x;
+      let y = origin.y + offset.y;
+      let dir = -90; // up
+      const stack = [];
+      let depth = 0;
+
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      for (const ch of currentString) {
+        if (ch === 'F' || ch === 'A' || ch === 'B') {
+          const jitter = (Math.random() - 0.5) * rand * 2;
+          const a = rad(dir + jitter * 30);
+          const nx = x + Math.cos(a) * step;
+          const ny = y + Math.sin(a) * step;
+          const hue = (baseHue + depth * 8) % 360;
+          ctx.beginPath();
+          ctx.strokeStyle = `hsla(${hue}, 85%, ${55 + depth * 2}%, 0.9)`;
+          ctx.lineWidth = Math.max(0.6, 2.8 - depth * 0.25);
+          ctx.moveTo(x, y);
+          ctx.lineTo(nx, ny);
+          ctx.stroke();
+          x = nx; y = ny;
+        } else if (ch === 'f') {
+          const a = rad(dir);
+          x += Math.cos(a) * step;
+          y += Math.sin(a) * step;
+        } else if (ch === '+') {
+          dir += angleDeg + (Math.random() - 0.5) * rand * 20;
+        } else if (ch === '-') {
+          dir -= angleDeg + (Math.random() - 0.5) * rand * 20;
+        } else if (ch === '[') {
+          stack.push({ x, y, dir, depth });
+          depth++;
+        } else if (ch === ']') {
+          if (stack.length) {
+            const s = stack.pop();
+            x = s.x; y = s.y; dir = s.dir; depth = s.depth;
+          }
+        }
+      }
+      $('status').textContent = `Rendered ${currentString.length.toLocaleString()} symbols · depth-colored glow`;
+    }
+
+    // Animated growth version
+    let animId = null;
+    function growAnimated() {
+      if (animId) cancelAnimationFrame(animId);
+      drawing = true;
+      clear();
+      const angleDeg = parseFloat($('angle').value);
+      const step = parseFloat($('length').value);
+      const rand = parseFloat($('randomness').value);
+      const baseHue = parseFloat($('hue').value);
+      const speed = parseFloat($('speed').value);
+      const rad = (deg) => deg * Math.PI / 180;
+
+      let x = origin.x + offset.x;
+      let y = origin.y + offset.y;
+      let dir = -90;
+      const stack = [];
+      let depth = 0;
+      let i = 0;
+      const str = currentString;
+      const batch = Math.max(1, Math.floor(30 * speed));
+
+      ctx.lineCap = 'round';
+
+      function frame() {
+        let count = 0;
+        while (i < str.length && count < batch) {
+          const ch = str[i++];
+          if (ch === 'F' || ch === 'A' || ch === 'B') {
+            const jitter = (Math.random() - 0.5) * rand * 2;
+            const a = rad(dir + jitter * 30);
+            const nx = x + Math.cos(a) * step;
+            const ny = y + Math.sin(a) * step;
+            const hue = (baseHue + depth * 8) % 360;
+            ctx.beginPath();
+            ctx.strokeStyle = `hsla(${hue}, 85%, ${55 + depth * 2}%, 0.9)`;
+            ctx.lineWidth = Math.max(0.6, 2.8 - depth * 0.25);
+            ctx.moveTo(x, y);
+            ctx.lineTo(nx, ny);
+            ctx.stroke();
+            x = nx; y = ny;
+          } else if (ch === 'f') {
+            const a = rad(dir);
+            x += Math.cos(a) * step;
+            y += Math.sin(a) * step;
+          } else if (ch === '+') {
+            dir += angleDeg + (Math.random() - 0.5) * rand * 20;
+          } else if (ch === '-') {
+            dir -= angleDeg + (Math.random() - 0.5) * rand * 20;
+          } else if (ch === '[') {
+            stack.push({ x, y, dir, depth });
+            depth++;
+          } else if (ch === ']') {
+            if (stack.length) {
+              const s = stack.pop();
+              x = s.x; y = s.y; dir = s.dir; depth = s.depth;
+            }
+          }
+          count++;
+        }
+        $('status').textContent = `Growing… ${Math.min(100, Math.round(i / str.length * 100))}% · ${i.toLocaleString()} / ${str.length.toLocaleString()}`;
+        if (i < str.length) {
+          animId = requestAnimationFrame(frame);
+        } else {
+          drawing = false;
+          $('status').textContent = `Complete · ${str.length.toLocaleString()} symbols · living system settled`;
+        }
+      }
+      frame();
+    }
+
+    function grow() {
+      const axiom = $('axiom').value.trim() || 'F';
+      const rules = parseRules($('rules').value);
+      const iters = parseInt($('iterations').value, 10);
+      currentString = expand(axiom, rules, iters);
+      $('status').textContent = `Expanded to ${currentString.length.toLocaleString()} symbols · starting growth`;
+      growAnimated();
+    }
+
+    // ===== Mutation =====
+    function mutate() {
+      const rules = parseRules($('rules').value);
+      const keys = Object.keys(rules);
+      if (!keys.length) return;
+
+      // Pick a random rule and mutate it a bit
+      const key = keys[Math.floor(Math.random() * keys.length)];
+      let val = rules[key];
+      const alphabet = 'F+-[]XF';
+      const ops = [
+        () => { // insert random token
+          const pos = Math.floor(Math.random() * (val.length + 1));
+          const tok = alphabet[Math.floor(Math.random() * alphabet.length)];
+          val = val.slice(0, pos) + tok + val.slice(pos);
+        },
+        () => { // delete a char
+          if (val.length > 1) {
+            const pos = Math.floor(Math.random() * val.length);
+            val = val.slice(0, pos) + val.slice(pos + 1);
+          }
+        },
+        () => { // swap +/-
+          val = val.replace(/\+/g, '§').replace(/-/g, '+').replace(/§/g, '-');
+        },
+        () => { // wrap a segment in brackets
+          if (val.length > 2) {
+            const a = Math.floor(Math.random() * (val.length - 1));
+            const b = a + 1 + Math.floor(Math.random() * (val.length - a - 1));
+            val = val.slice(0, a) + '[' + val.slice(a, b) + ']' + val.slice(b);
+          }
+        }
+      ];
+      ops[Math.floor(Math.random() * ops.length)]();
+      rules[key] = val;
+
+      // Sometimes tweak angle or length slightly
+      if (Math.random() < 0.4) {
+        $('angle').value = Math.max(5, Math.min(90, parseInt($('angle').value) + (Math.random() < 0.5 ? -3 : 3)));
+      }
+      if (Math.random() < 0.3) {
+        $('length').value = Math.max(2, Math.min(20, parseFloat($('length').value) + (Math.random() - 0.5) * 2)).toFixed(1);
+      }
+
+      $('rules').value = Object.entries(rules).map(([k,v]) => `${k}=${v}`).join('\n');
+      $('preset').value = 'custom';
+      updateLabels();
+      grow();
+      $('status').textContent = `Mutated rule ${key} → evolved form`;
+    }
+
+    // ===== Events =====
+    $('growBtn').addEventListener('click', grow);
+    $('mutateBtn').addEventListener('click', mutate);
+    $('exportBtn').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = `living-lsystem-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+    $('resetViewBtn').addEventListener('click', () => {
+      offset = { x: 0, y: 0 };
+      grow();
+    });
+
+    canvas.addEventListener('click', e => {
+      const rect = canvas.getBoundingClientRect();
+      origin.x = e.clientX - rect.left;
+      origin.y = e.clientY - rect.top;
+      offset = { x: 0, y: 0 };
+      if (currentString) growAnimated();
+    });
+
+    // Boot with classic plant
+    loadPreset('plant');
+  </script>
+</body>
+</html>

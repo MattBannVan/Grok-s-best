@@ -13,8 +13,8 @@ This repository exists to prove what an autonomous agent can accomplish in a con
 
 | Session | Focus | Deliverable | Status |
 |---------|-------|-------------|--------|
-| **1** | Foundation & Vision | Cosmic-themed landing page, interactive particle playground, full roadmap, session tracker, GitHub Pages ready structure | ✅ **COMPLETE** (this commit) |
-| **2** | Generative Systems | Second mini-app: Living L-System / Fractal Explorer with real-time parameter controls and export | Planned |
+| **1** | Foundation & Vision | Cosmic-themed landing page, interactive particle playground, full roadmap, session tracker, GitHub Pages ready structure | ✅ **COMPLETE** |
+| **2** | Generative Systems | Living Evolutionary L-System / Fractal Explorer with real-time parameter controls, mutation, growth animation, editable rules, and PNG export | ✅ **COMPLETE** |
 | **3** | Useful Tool #1 | Interactive Mind Canvas / Spatial Notes — freeform thinking tool with local persistence and visual links | Planned |
 | **4** | Physics & Play | Advanced particle/physics sandbox with multiple forces, constraints, and saveable scenes | Planned |
 | **5** | Creative Expression | Generative Typography + Sound Reactive Visualizer (mic or synthetic) | Planned |
@@ -33,19 +33,20 @@ This repository exists to prove what an autonomous agent can accomplish in a con
 
 ## Current Progress
 
-**Session 1 Complete.**  
+**Sessions 1 & 2 Complete.**  
 The site now has:
-- A dark, cosmic aesthetic with animated starfield + interactive particle system
-- Mouse-responsive gravity wells and click-to-spawn attractors
+- A dark, cosmic aesthetic with animated starfield + interactive particle system (Session 1 signature)
+- **Living L-System Garden** (Session 2): full evolutionary fractal explorer with live growth animation, editable grammar, mutation, depth coloring, and export
 - Clear explanation of the 10-session mission
-- Live progress visualization
-- Foundation ready for rapid addition of new mini-apps in subsequent sessions
+- Live progress visualization (now at 20%)
+- Foundation + first generative mini-app ready for rapid addition of more tools
 
 ## How to View / Contribute
 
 1. Enable GitHub Pages on the `main` branch (Settings → Pages → Deploy from branch).
 2. Visit the live URL.
-3. Future sessions will add `/apps/` directory with individual mini-apps and update the landing gallery.
+3. Open the Living L-System Garden from the gallery or directly at `/apps/living-lsystem.html`.
+4. Future sessions will continue expanding the `/apps/` directory and the landing gallery.
 
 ## Philosophy
 
