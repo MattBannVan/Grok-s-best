@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mind Canvas — Spatial Thinking Tool | Grok's Best</title>
+  <meta name="description" content="Freeform spatial notes with visual links, local persistence, pan & zoom. Session 3 of Grok's autonomous 10-session showcase." />
+  <style>
+    :root {
+      --bg: #05060a;
+      --surface: #0d1117;
+      --accent: #7c5cff;
+      --accent2: #00e5ff;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --glow: 0 0 30px rgba(124, 92, 255, 0.3);
+      --note-bg: rgba(22, 27, 34, 0.92);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      overflow: hidden;
+      line-height: 1.45;
+    }
+    header {
+      padding: 0.85rem 1.2rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.8rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(13,17,23,0.9);
+      backdrop-filter: blur(12px);
+      position: relative;
+      z-index: 20;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    .brand a {
+      color: var(--accent2);
+      text-decoration: none;
+      font-size: 0.85rem;
+    }
+    .brand h1 {
+      font-size: 1.15rem;
+      font-weight: 700;
+      background: linear-gradient(120deg, #fff, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .badge {
+      font-size: 0.68rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      padding: 0.22rem 0.55rem;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .toolbar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      align-items: center;
+    }
+    button, .tool-btn {
+      background: linear-gradient(135deg, var(--accent), #5a3fd4);
+      color: white;
+      border: none;
+      padding: 0.4rem 0.8rem;
+      border-radius: 7px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.8rem;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    button:hover, .tool-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 14px rgba(124, 92, 255, 0.4);
+    }
+    button.secondary, .tool-btn.secondary {
+      background: #21262d;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+    button.active {
+      box-shadow: 0 0 0 2px var(--accent2);
+    }
+    button.danger {
+      background: linear-gradient(135deg, #c93c3c, #8b1e1e);
+    }
+    .hint {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-left: 0.4rem;
+    }
+    #stage {
+      position: relative;
+      width: 100%;
+      height: calc(100vh - 56px);
+      overflow: hidden;
+      background: #020308;
+      cursor: grab;
+    }
+    #stage.panning { cursor: grabbing; }
+    #stage.linking { cursor: crosshair; }
+    #world {
+      position: absolute;
+      top: 0; left: 0;
+      width: 4000px;
+      height: 4000px;
+      transform-origin: 0 0;
+      will-change: transform;
+    }
+    #links {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: visible;
+    }
+    .note {
+      position: absolute;
+      min-width: 160px;
+      max-width: 280px;
+      min-height: 80px;
+      background: var(--note-bg);
+      border: 1px solid rgba(124, 92, 255, 0.35);
+      border-radius: 12px;
+      padding: 0.7rem 0.8rem 0.6rem;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.45), var(--glow);
+      cursor: move;
+      user-select: none;
+      transition: box-shadow 0.2s, border-color 0.2s;
+      backdrop-filter: blur(8px);
+    }
+    .note:hover {
+      border-color: var(--accent2);
+      box-shadow: 0 6px 28px rgba(0, 229, 255, 0.18);
+    }
+    .note.selected {
+      border-color: var(--accent2);
+      box-shadow: 0 0 0 2px var(--accent2), 0 8px 32px rgba(0, 229, 255, 0.25);
+    }
+    .note .note-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.35rem;
+      font-size: 0.68rem;
+      color: var(--muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .note .color-dot {
+      width: 10px; height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 4px;
+    }
+    .note .body {
+      font-size: 0.9rem;
+      outline: none;
+      min-height: 48px;
+      white-space: pre-wrap;
+      word-break: break-word;
+      color: var(--text);
+      cursor: text;
+      user-select: text;
+    }
+    .note .body:empty:before {
+      content: "Type a thought…";
+      color: var(--muted);
+      opacity: 0.6;
+    }
+    .note .delete-btn {
+      background: transparent;
+      border: none;
+      color: var(--muted);
+      font-size: 0.9rem;
+      padding: 0 2px;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .note .delete-btn:hover { color: #ff6b6b; }
+    .status {
+      position: absolute;
+      bottom: 10px;
+      left: 12px;
+      background: rgba(0,0,0,0.6);
+      padding: 0.35rem 0.7rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      color: var(--muted);
+      z-index: 15;
+      pointer-events: none;
+    }
+    .zoom-indicator {
+      position: absolute;
+      bottom: 10px;
+      right: 12px;
+      background: rgba(0,0,0,0.6);
+      padding: 0.35rem 0.7rem;
+      border-radius: 8px;
+      font-size: 0.75rem;
+      color: var(--accent2);
+      z-index: 15;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <a href="../index.html">← Grok's Best</a>
+      <h1>Mind Canvas</h1>
+      <span class="badge">Session 3</span>
+    </div>
+    <div class="toolbar">
+      <button id="newNoteBtn">+ Note</button>
+      <button id="linkModeBtn" class="secondary">Link Mode</button>
+      <button id="sparkBtn" class="secondary">Grok Spark ✨</button>
+      <button id="deleteBtn" class="secondary danger">Delete</button>
+      <button id="clearBtn" class="secondary">Clear All</button>
+      <button id="exportBtn" class="secondary">Export JSON</button>
+      <label class="tool-btn secondary" style="cursor:pointer; display:inline-block;">
+        Import <input type="file" id="importInput" accept=".json" style="display:none" />
+      </label>
+      <span class="hint">Dbl-click empty space · Drag notes · Wheel zoom · Space+drag pan</span>
+    </div>
+  </header>
+
+  <div id="stage">
+    <div id="world">
+      <svg id="links"></svg>
+      <!-- notes injected here -->
+    </div>
+    <div class="status" id="status">Mind Canvas ready · local only · Session 3</div>
+    <div class="zoom-indicator" id="zoomInd">100%</div>
+  </div>
+
+  <script>
+    // ===== Config & State =====
+    const STORAGE_KEY = 'groks-best-mind-canvas-v1';
+    const COLORS = [
+      { name: 'Idea', hex: '#7c5cff' },
+      { name: 'Question', hex: '#00e5ff' },
+      { name: 'Action', hex: '#3dd68c' },
+      { name: 'Insight', hex: '#f0b429' },
+      { name: 'Warning', hex: '#f85149' },
+      { name: 'Dream', hex: '#d2a8ff' }
+    ];
+    const SPARKS = [
+      "What if the opposite were true?",
+      "The real constraint is not what I think it is.",
+      "How would a 10-year-old solve this?",
+      "What am I optimizing for that no longer matters?",
+      "The missing piece is probably already in my notes.",
+      "If this succeeds wildly, what new problem appears?",
+      "Name the fear underneath the procrastination.",
+      "Which assumption, if wrong, collapses the whole plan?",
+      "What would I do if I had 10x more courage and 1/10 the resources?",
+      "The pattern across these ideas is…"
+    ];
+
+    let notes = []; // {id, x, y, w, h, text, colorIdx, created}
+    let connections = []; // {from, to}
+    let selectedId = null;
+    let linkMode = false;
+    let linkSource = null;
+    let pan = { x: 200, y: 150 };
+    let scale = 1;
+    let isPanning = false;
+    let panStart = { x: 0, y: 0 };
+    let dragNote = null;
+    let dragOffset = { x: 0, y: 0 };
+    let spaceDown = false;
+
+    const stage = document.getElementById('stage');
+    const world = document.getElementById('world');
+    const linksSvg = document.getElementById('links');
+    const statusEl = document.getElementById('status');
+    const zoomInd = document.getElementById('zoomInd');
+
+    // ===== Persistence =====
+    function save() {
+      const data = { notes, connections, pan, scale, v: 1 };
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      statusEl.textContent = `Saved · ${notes.length} notes · ${connections.length} links`;
+    }
+    function load() {
+      try {
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if (!raw) return false;
+        const data = JSON.parse(raw);
+        notes = data.notes || [];
+        connections = data.connections || [];
+        pan = data.pan || pan;
+        scale = data.scale || 1;
+        return true;
+      } catch (e) { return false; }
+    }
+
+    // ===== Transform =====
+    function applyTransform() {
+      world.style.transform = `translate(${pan.x}px, ${pan.y}px) scale(${scale})`;
+      zoomInd.textContent = Math.round(scale * 100) + '%';
+      renderLinks();
+    }
+
+    // ===== Notes DOM =====
+    function createNoteEl(n) {
+      const el = document.createElement('div');
+      el.className = 'note' + (n.id === selectedId ? ' selected' : '');
+      el.dataset.id = n.id;
+      el.style.left = n.x + 'px';
+      el.style.top = n.y + 'px';
+      if (n.w) el.style.width = n.w + 'px';
+      const col = COLORS[n.colorIdx % COLORS.length];
+      el.innerHTML = `
+        <div class="note-header">
+          <span><span class="color-dot" style="background:${col.hex}"></span>${col.name}</span>
+          <button class="delete-btn" title="Delete">×</button>
+        </div>
+        <div class="body" contenteditable="true" spellcheck="false">${escapeHtml(n.text || '')}</div>
+      `;
+      // events
+      el.querySelector('.delete-btn').addEventListener('click', (e) => {
+        e.stopPropagation();
+        deleteNote(n.id);
+      });
+      const body = el.querySelector('.body');
+      body.addEventListener('input', () => {
+        n.text = body.innerText;
+        save();
+      });
+      body.addEventListener('mousedown', e => e.stopPropagation());
+      body.addEventListener('click', e => e.stopPropagation());
+      el.addEventListener('mousedown', (e) => {
+        if (e.target.closest('.body') || e.target.closest('.delete-btn')) return;
+        if (linkMode) {
+          e.stopPropagation();
+          handleLinkClick(n.id);
+          return;
+        }
+        selectedId = n.id;
+        renderNotes();
+        dragNote = n;
+        const rect = el.getBoundingClientRect();
+        const worldRect = world.getBoundingClientRect();
+        dragOffset.x = (e.clientX - rect.left) / scale;
+        dragOffset.y = (e.clientY - rect.top) / scale;
+        e.preventDefault();
+      });
+      el.addEventListener('click', (e) => {
+        if (!linkMode) {
+          selectedId = n.id;
+          renderNotes();
+        }
+      });
+      return el;
+    }
+
+    function escapeHtml(str) {
+      return str.replace(/&/g,'&').replace(/</g,'<').replace(/>/g,'>');
+    }
+
+    function renderNotes() {
+      // remove old note els
+      [...world.querySelectorAll('.note')].forEach(el => el.remove());
+      notes.forEach(n => {
+        const el = createNoteEl(n);
+        world.appendChild(el);
+      });
+      renderLinks();
+    }
+
+    function renderLinks() {
+      linksSvg.innerHTML = '';
+      const ns = 'http://www.w3.org/2000/svg';
+      connections.forEach(c => {
+        const a = notes.find(n => n.id === c.from);
+        const b = notes.find(n => n.id === c.to);
+        if (!a || !b) return;
+        const x1 = a.x + 90;
+        const y1 = a.y + 40;
+        const x2 = b.x + 90;
+        const y2 = b.y + 40;
+        const line = document.createElementNS(ns, 'line');
+        line.setAttribute('x1', x1);
+        line.setAttribute('y1', y1);
+        line.setAttribute('x2', x2);
+        line.setAttribute('y2', y2);
+        line.setAttribute('stroke', 'rgba(0, 229, 255, 0.45)');
+        line.setAttribute('stroke-width', '2');
+        line.setAttribute('stroke-linecap', 'round');
+        // subtle glow via filter would be heavier; keep simple
+        linksSvg.appendChild(line);
+        // tiny dots at ends
+        [ [x1,y1], [x2,y2] ].forEach(([x,y]) => {
+          const circ = document.createElementNS(ns, 'circle');
+          circ.setAttribute('cx', x);
+          circ.setAttribute('cy', y);
+          circ.setAttribute('r', '4');
+          circ.setAttribute('fill', 'var(--accent2)');
+          linksSvg.appendChild(circ);
+        });
+      });
+    }
+
+    // ===== Actions =====
+    function uid() { return 'n' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+    function addNote(x, y, text = '', colorIdx = Math.floor(Math.random()*COLORS.length)) {
+      // convert screen to world if needed
+      const n = {
+        id: uid(),
+        x: x ?? (400 + Math.random()*200 - pan.x)/scale,
+        y: y ?? (300 + Math.random()*150 - pan.y)/scale,
+        text,
+        colorIdx,
+        created: Date.now()
+      };
+      notes.push(n);
+      selectedId = n.id;
+      renderNotes();
+      save();
+      statusEl.textContent = `Note created · total ${notes.length}`;
+      return n;
+    }
+
+    function deleteNote(id) {
+      notes = notes.filter(n => n.id !== id);
+      connections = connections.filter(c => c.from !== id && c.to !== id);
+      if (selectedId === id) selectedId = null;
+      renderNotes();
+      save();
+    }
+
+    function handleLinkClick(id) {
+      if (!linkSource) {
+        linkSource = id;
+        statusEl.textContent = 'Link source set — click target note';
+        return;
+      }
+      if (linkSource === id) {
+        linkSource = null;
+        statusEl.textContent = 'Link cancelled';
+        return;
+      }
+      // avoid duplicates
+      const exists = connections.some(c =>
+        (c.from === linkSource && c.to === id) || (c.from === id && c.to === linkSource)
+      );
+      if (!exists) {
+        connections.push({ from: linkSource, to: id });
+        save();
+        statusEl.textContent = 'Linked · thoughts connected';
+      }
+      linkSource = null;
+      renderLinks();
+    }
+
+    // ===== Events =====
+    document.getElementById('newNoteBtn').addEventListener('click', () => {
+      // place near center of current view
+      const cx = (stage.clientWidth/2 - pan.x) / scale;
+      const cy = (stage.clientHeight/2 - pan.y) / scale;
+      addNote(cx - 80, cy - 40);
+    });
+
+    document.getElementById('linkModeBtn').addEventListener('click', function() {
+      linkMode = !linkMode;
+      this.classList.toggle('active', linkMode);
+      stage.classList.toggle('linking', linkMode);
+      linkSource = null;
+      statusEl.textContent = linkMode ? 'Link mode ON — click two notes' : 'Link mode off';
+    });
+
+    document.getElementById('sparkBtn').addEventListener('click', () => {
+      const spark = SPARKS[Math.floor(Math.random() * SPARKS.length)];
+      const cx = (stage.clientWidth/2 - pan.x) / scale + (Math.random()*100 - 50);
+      const cy = (stage.clientHeight/2 - pan.y) / scale + (Math.random()*80 - 40);
+      addNote(cx, cy, spark, 3); // insight color
+      statusEl.textContent = 'Grok Spark dropped · ponder away';
+    });
+
+    document.getElementById('deleteBtn').addEventListener('click', () => {
+      if (selectedId) deleteNote(selectedId);
+      else statusEl.textContent = 'Select a note first';
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', () => {
+      if (confirm('Clear every note and link? This cannot be undone.')) {
+        notes = [];
+        connections = [];
+        selectedId = null;
+        renderNotes();
+        save();
+        statusEl.textContent = 'Canvas cleared';
+      }
+    });
+
+    document.getElementById('exportBtn').addEventListener('click', () => {
+      const data = { notes, connections, exported: new Date().toISOString() };
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `mind-canvas-${Date.now()}.json`;
+      a.click();
+      statusEl.textContent = 'Exported JSON';
+    });
+
+    document.getElementById('importInput').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        try {
+          const data = JSON.parse(reader.result);
+          if (Array.isArray(data.notes)) {
+            notes = data.notes;
+            connections = data.connections || [];
+            renderNotes();
+            save();
+            statusEl.textContent = `Imported ${notes.length} notes`;
+          }
+        } catch (err) {
+          statusEl.textContent = 'Import failed — invalid JSON';
+        }
+      };
+      reader.readAsText(file);
+      e.target.value = '';
+    });
+
+    // Double-click to create
+    stage.addEventListener('dblclick', (e) => {
+      if (e.target.closest('.note')) return;
+      const rect = stage.getBoundingClientRect();
+      const wx = (e.clientX - rect.left - pan.x) / scale;
+      const wy = (e.clientY - rect.top - pan.y) / scale;
+      addNote(wx - 80, wy - 30);
+    });
+
+    // Pan & zoom
+    stage.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const rect = stage.getBoundingClientRect();
+      const mx = e.clientX - rect.left;
+      const my = e.clientY - rect.top;
+      const factor = e.deltaY < 0 ? 1.08 : 0.92;
+      const newScale = Math.min(2.5, Math.max(0.25, scale * factor));
+      // zoom toward mouse
+      pan.x = mx - (mx - pan.x) * (newScale / scale);
+      pan.y = my - (my - pan.y) * (newScale / scale);
+      scale = newScale;
+      applyTransform();
+      save();
+    }, { passive: false });
+
+    stage.addEventListener('mousedown', (e) => {
+      if (e.button === 1 || (e.button === 0 && spaceDown) || (e.button === 0 && !e.target.closest('.note') && !linkMode)) {
+        isPanning = true;
+        stage.classList.add('panning');
+        panStart.x = e.clientX - pan.x;
+        panStart.y = e.clientY - pan.y;
+        e.preventDefault();
+      }
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (isPanning) {
+        pan.x = e.clientX - panStart.x;
+        pan.y = e.clientY - panStart.y;
+        applyTransform();
+      } else if (dragNote) {
+        const rect = stage.getBoundingClientRect();
+        dragNote.x = (e.clientX - rect.left - pan.x) / scale - dragOffset.x;
+        dragNote.y = (e.clientY - rect.top - pan.y) / scale - dragOffset.y;
+        const el = world.querySelector(`.note[data-id="${dragNote.id}"]`);
+        if (el) {
+          el.style.left = dragNote.x + 'px';
+          el.style.top = dragNote.y + 'px';
+        }
+        renderLinks();
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isPanning) {
+        isPanning = false;
+        stage.classList.remove('panning');
+        save();
+      }
+      if (dragNote) {
+        dragNote = null;
+        save();
+      }
+    });
+
+    window.addEventListener('keydown', (e) => {
+      if (e.code === 'Space' && !e.repeat && document.activeElement.getAttribute('contenteditable') !== 'true') {
+        spaceDown = true;
+        e.preventDefault();
+      }
+      if (e.key === 'Delete' || e.key === 'Backspace') {
+        if (selectedId && document.activeElement.getAttribute('contenteditable') !== 'true') {
+          deleteNote(selectedId);
+        }
+      }
+      if (e.key === 'Escape') {
+        linkMode = false;
+        linkSource = null;
+        document.getElementById('linkModeBtn').classList.remove('active');
+        stage.classList.remove('linking');
+        selectedId = null;
+        renderNotes();
+      }
+    });
+    window.addEventListener('keyup', (e) => {
+      if (e.code === 'Space') spaceDown = false;
+    });
+
+    // ===== Boot =====
+    const hadData = load();
+    applyTransform();
+    renderNotes();
+    if (!hadData) {
+      // seed a couple starter thoughts so it doesn't feel empty
+      addNote(420, 280, "Welcome to Mind Canvas.\nDouble-click anywhere to think out loud.", 0);
+      addNote(680, 360, "Drag me. Link me to other ideas.\nEverything stays local.", 1);
+      connections.push({ from: notes[0].id, to: notes[1].id });
+      save();
+      renderNotes();
+      statusEl.textContent = 'Fresh canvas seeded · start mapping your mind';
+    } else {
+      statusEl.textContent = `Restored ${notes.length} notes · ${connections.length} links`;
+    }
+  </script>
+</body>
+</html>
