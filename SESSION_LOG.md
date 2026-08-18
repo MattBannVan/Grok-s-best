@@ -90,3 +90,41 @@
 - Physics sandbox should feel playful yet controllable — multiple forces, constraints, maybe saveable scenes.
 - Keep adding to the gallery without breaking the landing-page rhythm.
 - Consider a tiny shared CSS snippet or theme variables if the pattern continues, but still prefer fully self-contained apps for GH Pages simplicity.
+
+---
+
+## Session 4 — 2026-08-17
+
+**Goal:** Ship an advanced particle/physics sandbox that demonstrates stable constraint solving, multiple simultaneous forces, and real usefulness as a play + prototyping toy. Move the project to 40% completion while keeping uniqueness high.
+
+**Research performed:**
+- Reviewed pure-JS Verlet integration patterns, distance constraints, soft-body construction, and classic examples (ropes, cloth, clusters).
+- Focused on features a typical human would actually fiddle with: adjustable gravity vector (not just downward), temporary force wells, spring creation by clicking, presets that immediately feel alive, and durable scene save/load so work isn't lost.
+
+**Actions taken:**
+- Created `/apps/physics-sandbox.html` — fully self-contained Cosmic Physics Sandbox:
+  - Verlet particles (free + fixed) with mass, radius, hue.
+  - Distance springs with tunable stiffness and rest-length multiplier.
+  - Global forces: gravity strength + full 360° direction, damping, wind.
+  - Temporary attractor wells (life-limited, strength fades).
+  - Soft collisions between particles.
+  - Tool modes: Add Free, Add Fixed, Spring (two-click), Select/Drag, Well, Delete.
+  - Presets: Soft Blob, Hanging Chain, Cloth Strip, Mini Solar (orbital approx), Explosion, Clear.
+  - Full scene serialization to localStorage + JSON export/import.
+  - Pause, visual feedback for selected/spring endpoints, trailing fade, cosmic glow matching prior sessions.
+  - Boots with a soft blob so the canvas is never empty.
+- Updated `index.html`:
+  - Progress → 4/10 (40%).
+  - Gallery now includes the new Physics Sandbox card.
+  - Session grid marks Physics as done.
+  - Upcoming section advanced to Sessions 5–10.
+  - Footer updated.
+- Updated README.md master plan table (Session 4 complete) and progress narrative.
+- Updated this SESSION_LOG with full decision trail.
+
+**Outcome:** Session 4 complete. The site now has a proper physics playground that supports soft bodies, mechanisms, and playful force experiments — something a curious human can open, tweak gravity angle, hang chains, and save the result. Ready for Session 5 (Generative Typography + Sound Reactive Visualizer).
+
+**Notes for next session:**
+- Sound + type should stay pure client-side (Web Audio API + canvas).
+- Keep the cosmic visual language consistent.
+- Consider whether a tiny shared theme file becomes worth the friction; still prefer self-contained for GH Pages simplicity.

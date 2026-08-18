@@ -1,0 +1,741 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cosmic Physics Sandbox — Grok's Best</title>
+  <meta name="description" content="Advanced particle/physics sandbox with Verlet integration, springs, multiple forces, constraints, and saveable scenes. Session 4 of Grok's autonomous showcase." />
+  <style>
+    :root {
+      --bg: #05060a;
+      --surface: #0d1117;
+      --accent: #7c5cff;
+      --accent2: #00e5ff;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --glow: 0 0 30px rgba(124, 92, 255, 0.3);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    header {
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(13,17,23,0.85);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .brand a {
+      color: var(--accent2);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .brand h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      background: linear-gradient(120deg, #fff, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .badge {
+      font-size: 0.7rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 70px);
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid rgba(255,255,255,0.06);
+      padding: 1.2rem;
+      overflow-y: auto;
+      max-height: calc(100vh - 70px);
+    }
+    .sidebar h2 {
+      font-size: 0.9rem;
+      color: var(--accent2);
+      margin-bottom: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .control-group {
+      margin-bottom: 1rem;
+    }
+    label {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-bottom: 0.25rem;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+    .value {
+      font-size: 0.72rem;
+      color: var(--accent2);
+      float: right;
+    }
+    select, input[type="text"] {
+      width: 100%;
+      background: #161b22;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      padding: 0.4rem 0.55rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.45rem;
+      margin-top: 0.6rem;
+    }
+    button {
+      background: linear-gradient(135deg, var(--accent), #5a3fd4);
+      color: white;
+      border: none;
+      padding: 0.45rem 0.8rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.82rem;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(124, 92, 255, 0.45);
+    }
+    button.secondary {
+      background: #21262d;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    button.danger {
+      background: linear-gradient(135deg, #c93c3c, #8b1e1e);
+    }
+    button.active {
+      box-shadow: 0 0 0 2px var(--accent2);
+    }
+    .main {
+      position: relative;
+      background: #020308;
+      display: flex;
+      flex-direction: column;
+    }
+    #canvas {
+      flex: 1;
+      width: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+    .status {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(0,0,0,0.65);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      pointer-events: none;
+    }
+    .hint {
+      font-size: 0.72rem;
+      color: var(--muted);
+      margin-top: 0.5rem;
+      line-height: 1.4;
+    }
+    .tool-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.4rem;
+      margin-bottom: 0.8rem;
+    }
+    .tool-grid button {
+      font-size: 0.78rem;
+      padding: 0.4rem 0.5rem;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <a href="../index.html">← Grok's Best</a>
+      <h1>Cosmic Physics Sandbox</h1>
+      <span class="badge">Session 4</span>
+    </div>
+    <div style="font-size:0.85rem;color:var(--muted)">Verlet · springs · forces · saveable scenes</div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Tools</h2>
+      <div class="tool-grid" id="toolButtons">
+        <button data-tool="add" class="active">+ Free</button>
+        <button data-tool="fixed" class="secondary">+ Fixed</button>
+        <button data-tool="spring" class="secondary">Spring</button>
+        <button data-tool="select" class="secondary">Select</button>
+        <button data-tool="attractor" class="secondary">Well</button>
+        <button data-tool="delete" class="secondary">Delete</button>
+      </div>
+
+      <h2>Forces</h2>
+      <div class="control-group">
+        <label>Gravity Strength <span class="value" id="gVal">0.18</span></label>
+        <input type="range" id="gravity" min="0" max="0.6" value="0.18" step="0.01" />
+      </div>
+      <div class="control-group">
+        <label>Gravity Angle (°) <span class="value" id="gaVal">90</span></label>
+        <input type="range" id="gAngle" min="0" max="360" value="90" step="1" />
+      </div>
+      <div class="control-group">
+        <label>Damping <span class="value" id="dampVal">0.02</span></label>
+        <input type="range" id="damping" min="0" max="0.15" value="0.02" step="0.005" />
+      </div>
+      <div class="control-group">
+        <label>Wind X <span class="value" id="windVal">0</span></label>
+        <input type="range" id="wind" min="-0.3" max="0.3" value="0" step="0.01" />
+      </div>
+
+      <h2>Spring Defaults</h2>
+      <div class="control-group">
+        <label>Stiffness <span class="value" id="stiffVal">0.12</span></label>
+        <input type="range" id="stiffness" min="0.02" max="0.5" value="0.12" step="0.01" />
+      </div>
+      <div class="control-group">
+        <label>Rest Length Mult <span class="value" id="restVal">1.0</span></label>
+        <input type="range" id="restMult" min="0.4" max="2" value="1" step="0.05" />
+      </div>
+
+      <h2>Presets</h2>
+      <div class="control-group">
+        <select id="preset">
+          <option value="">— Choose —</option>
+          <option value="blob">Soft Blob</option>
+          <option value="chain">Hanging Chain</option>
+          <option value="cloth">Cloth Strip</option>
+          <option value="solar">Mini Solar</option>
+          <option value="explosion">Explosion</option>
+          <option value="clear">Clear All</option>
+        </select>
+      </div>
+
+      <div class="btn-row">
+        <button id="saveBtn" class="secondary">Save Scene</button>
+        <button id="loadBtn" class="secondary">Load</button>
+        <button id="exportBtn" class="secondary">Export JSON</button>
+        <button id="importBtn" class="secondary">Import</button>
+        <button id="pauseBtn" class="secondary">Pause</button>
+      </div>
+      <p class="hint">
+        Click canvas to place. Spring tool: click two particles to connect. Select + drag moves free particles. Wells are temporary attractors. Scenes auto-save to localStorage key "grok-physics-scene".
+      </p>
+      <input type="file" id="fileInput" accept=".json" style="display:none" />
+    </aside>
+
+    <div class="main">
+      <canvas id="canvas"></canvas>
+      <div class="status" id="status">Ready · Session 4 physics sandbox</div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Core Verlet Physics =====
+    class Particle {
+      constructor(x, y, fixed = false, mass = 1, radius = 6, hue = 200) {
+        this.x = x; this.y = y;
+        this.ox = x; this.oy = y; // previous
+        this.fixed = fixed;
+        this.mass = mass;
+        this.radius = radius;
+        this.hue = hue;
+        this.id = Math.random().toString(36).slice(2, 9);
+      }
+      update(gx, gy, damp, wind) {
+        if (this.fixed) return;
+        let vx = (this.x - this.ox) * (1 - damp) + wind;
+        let vy = (this.y - this.oy) * (1 - damp);
+        this.ox = this.x; this.oy = this.y;
+        this.x += vx + gx;
+        this.y += vy + gy;
+      }
+      constrain(w, h) {
+        if (this.fixed) return;
+        const r = this.radius;
+        if (this.x < r) { this.x = r; this.ox = this.x + (this.x - this.ox) * 0.4; }
+        if (this.x > w - r) { this.x = w - r; this.ox = this.x + (this.x - this.ox) * 0.4; }
+        if (this.y < r) { this.y = r; this.oy = this.y + (this.y - this.oy) * 0.4; }
+        if (this.y > h - r) { this.y = h - r; this.oy = this.y + (this.y - this.oy) * 0.4; }
+      }
+    }
+
+    class Spring {
+      constructor(a, b, rest, stiffness = 0.12) {
+        this.a = a; this.b = b;
+        this.rest = rest;
+        this.stiffness = stiffness;
+      }
+      solve() {
+        const dx = this.b.x - this.a.x;
+        const dy = this.b.y - this.a.y;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 0.001;
+        const diff = (dist - this.rest) / dist;
+        const force = diff * this.stiffness;
+        const ox = dx * force;
+        const oy = dy * force;
+        if (!this.a.fixed) { this.a.x += ox; this.a.y += oy; }
+        if (!this.b.fixed) { this.b.x -= ox; this.b.y -= oy; }
+      }
+    }
+
+    class Attractor {
+      constructor(x, y, strength = 2.5, life = 240) {
+        this.x = x; this.y = y;
+        this.strength = strength;
+        this.life = life;
+        this.maxLife = life;
+      }
+    }
+
+    // ===== State =====
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, dpr;
+    let particles = [];
+    let springs = [];
+    let attractors = [];
+    let tool = 'add';
+    let selected = null;
+    let springFirst = null;
+    let dragging = null;
+    let paused = false;
+    let mouse = { x: 0, y: 0, down: false };
+
+    function resize() {
+      dpr = window.devicePixelRatio || 1;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      W = rect.width;
+      H = rect.height;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // ===== UI =====
+    const $ = id => document.getElementById(id);
+    function updateLabels() {
+      $('gVal').textContent = parseFloat($('gravity').value).toFixed(2);
+      $('gaVal').textContent = $('gAngle').value;
+      $('dampVal').textContent = parseFloat($('damping').value).toFixed(3);
+      $('windVal').textContent = parseFloat($('wind').value).toFixed(2);
+      $('stiffVal').textContent = parseFloat($('stiffness').value).toFixed(2);
+      $('restVal').textContent = parseFloat($('restMult').value).toFixed(1);
+    }
+    ['gravity','gAngle','damping','wind','stiffness','restMult'].forEach(id => {
+      $(id).addEventListener('input', updateLabels);
+    });
+    updateLabels();
+
+    document.querySelectorAll('#toolButtons button').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('#toolButtons button').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        tool = btn.dataset.tool;
+        springFirst = null;
+        selected = null;
+        $('status').textContent = `Tool: ${tool}`;
+      });
+    });
+
+    // ===== Physics helpers =====
+    function getGravity() {
+      const str = parseFloat($('gravity').value);
+      const ang = parseFloat($('gAngle').value) * Math.PI / 180;
+      return { gx: Math.cos(ang) * str, gy: Math.sin(ang) * str };
+    }
+
+    function addParticle(x, y, fixed = false) {
+      const hue = fixed ? 40 : 190 + Math.random() * 80;
+      const p = new Particle(x, y, fixed, fixed ? 0 : 1 + Math.random() * 0.8, fixed ? 7 : 5 + Math.random() * 4, hue);
+      particles.push(p);
+      return p;
+    }
+
+    function findNearest(x, y, maxDist = 18) {
+      let best = null, bestD = maxDist;
+      for (const p of particles) {
+        const d = Math.hypot(p.x - x, p.y - y);
+        if (d < bestD) { bestD = d; best = p; }
+      }
+      return best;
+    }
+
+    function collide() {
+      for (let i = 0; i < particles.length; i++) {
+        for (let j = i + 1; j < particles.length; j++) {
+          const a = particles[i], b = particles[j];
+          const dx = b.x - a.x, dy = b.y - a.y;
+          const dist = Math.hypot(dx, dy) || 0.001;
+          const minD = a.radius + b.radius;
+          if (dist < minD) {
+            const overlap = (minD - dist) / 2;
+            const nx = dx / dist, ny = dy / dist;
+            if (!a.fixed) { a.x -= nx * overlap; a.y -= ny * overlap; }
+            if (!b.fixed) { b.x += nx * overlap; b.y += ny * overlap; }
+          }
+        }
+      }
+    }
+
+    // ===== Interaction =====
+    canvas.addEventListener('mousedown', e => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+      mouse.down = true;
+
+      if (tool === 'add') {
+        addParticle(mouse.x, mouse.y, false);
+      } else if (tool === 'fixed') {
+        addParticle(mouse.x, mouse.y, true);
+      } else if (tool === 'attractor') {
+        attractors.push(new Attractor(mouse.x, mouse.y, 3.2, 300));
+      } else if (tool === 'spring') {
+        const p = findNearest(mouse.x, mouse.y);
+        if (p) {
+          if (!springFirst) {
+            springFirst = p;
+            $('status').textContent = 'Spring: select second particle';
+          } else if (springFirst !== p) {
+            const rest = Math.hypot(springFirst.x - p.x, springFirst.y - p.y) * parseFloat($('restMult').value);
+            springs.push(new Spring(springFirst, p, rest, parseFloat($('stiffness').value)));
+            springFirst = null;
+            $('status').textContent = 'Spring created';
+          }
+        }
+      } else if (tool === 'select') {
+        selected = findNearest(mouse.x, mouse.y);
+        if (selected && !selected.fixed) dragging = selected;
+      } else if (tool === 'delete') {
+        const p = findNearest(mouse.x, mouse.y);
+        if (p) {
+          particles = particles.filter(x => x !== p);
+          springs = springs.filter(s => s.a !== p && s.b !== p);
+          if (selected === p) selected = null;
+        }
+      }
+    });
+
+    canvas.addEventListener('mousemove', e => {
+      const rect = canvas.getBoundingClientRect();
+      mouse.x = e.clientX - rect.left;
+      mouse.y = e.clientY - rect.top;
+      if (dragging) {
+        dragging.x = mouse.x;
+        dragging.y = mouse.y;
+        dragging.ox = mouse.x;
+        dragging.oy = mouse.y;
+      }
+    });
+
+    canvas.addEventListener('mouseup', () => {
+      mouse.down = false;
+      dragging = null;
+    });
+    canvas.addEventListener('mouseleave', () => {
+      mouse.down = false;
+      dragging = null;
+    });
+
+    // ===== Presets =====
+    function clearAll() {
+      particles = [];
+      springs = [];
+      attractors = [];
+      selected = null;
+      springFirst = null;
+    }
+
+    function loadPreset(name) {
+      clearAll();
+      const cx = W / 2, cy = H / 2;
+      if (name === 'blob') {
+        const pts = [];
+        for (let i = 0; i < 12; i++) {
+          const a = (i / 12) * Math.PI * 2;
+          pts.push(addParticle(cx + Math.cos(a) * 70, cy + Math.sin(a) * 70));
+        }
+        const center = addParticle(cx, cy);
+        for (let i = 0; i < 12; i++) {
+          springs.push(new Spring(pts[i], pts[(i + 1) % 12], 36, 0.15));
+          springs.push(new Spring(pts[i], center, 70, 0.08));
+        }
+      } else if (name === 'chain') {
+        let prev = addParticle(cx, 40, true);
+        for (let i = 1; i < 14; i++) {
+          const p = addParticle(cx + (Math.random() - 0.5) * 8, 40 + i * 28);
+          springs.push(new Spring(prev, p, 28, 0.18));
+          prev = p;
+        }
+      } else if (name === 'cloth') {
+        const cols = 10, rows = 7, spacing = 28;
+        const grid = [];
+        for (let y = 0; y < rows; y++) {
+          const row = [];
+          for (let x = 0; x < cols; x++) {
+            const fixed = y === 0 && (x === 0 || x === cols - 1 || x === Math.floor(cols / 2));
+            row.push(addParticle(cx - (cols * spacing) / 2 + x * spacing, 50 + y * spacing, fixed));
+          }
+          grid.push(row);
+        }
+        for (let y = 0; y < rows; y++) {
+          for (let x = 0; x < cols; x++) {
+            if (x < cols - 1) springs.push(new Spring(grid[y][x], grid[y][x + 1], spacing, 0.14));
+            if (y < rows - 1) springs.push(new Spring(grid[y][x], grid[y + 1][x], spacing, 0.14));
+          }
+        }
+      } else if (name === 'solar') {
+        const sun = addParticle(cx, cy, true, 0, 14, 45);
+        for (let i = 0; i < 6; i++) {
+          const a = (i / 6) * Math.PI * 2;
+          const r = 80 + i * 25;
+          const p = addParticle(cx + Math.cos(a) * r, cy + Math.sin(a) * r, false, 0.6, 5, 180 + i * 25);
+          // give orbital velocity approximation via previous pos
+          p.ox = p.x + Math.sin(a) * 2.2;
+          p.oy = p.y - Math.cos(a) * 2.2;
+        }
+      } else if (name === 'explosion') {
+        for (let i = 0; i < 40; i++) {
+          const a = Math.random() * Math.PI * 2;
+          const sp = 3 + Math.random() * 6;
+          const p = addParticle(cx, cy);
+          p.ox = p.x - Math.cos(a) * sp;
+          p.oy = p.y - Math.sin(a) * sp;
+        }
+      }
+      $('status').textContent = `Preset: ${name}`;
+    }
+
+    $('preset').addEventListener('change', e => {
+      if (e.target.value) {
+        loadPreset(e.target.value);
+        e.target.value = '';
+      }
+    });
+
+    // ===== Save / Load =====
+    function serialize() {
+      return JSON.stringify({
+        particles: particles.map(p => ({
+          x: p.x, y: p.y, ox: p.ox, oy: p.oy,
+          fixed: p.fixed, mass: p.mass, radius: p.radius, hue: p.hue, id: p.id
+        })),
+        springs: springs.map(s => ({
+          a: s.a.id, b: s.b.id, rest: s.rest, stiffness: s.stiffness
+        })),
+        gravity: $('gravity').value,
+        gAngle: $('gAngle').value,
+        damping: $('damping').value,
+        wind: $('wind').value
+      });
+    }
+
+    function deserialize(json) {
+      try {
+        const data = JSON.parse(json);
+        clearAll();
+        const map = {};
+        data.particles.forEach(pd => {
+          const p = new Particle(pd.x, pd.y, pd.fixed, pd.mass, pd.radius, pd.hue);
+          p.ox = pd.ox; p.oy = pd.oy; p.id = pd.id;
+          particles.push(p);
+          map[p.id] = p;
+        });
+        data.springs.forEach(sd => {
+          if (map[sd.a] && map[sd.b]) {
+            springs.push(new Spring(map[sd.a], map[sd.b], sd.rest, sd.stiffness));
+          }
+        });
+        if (data.gravity) $('gravity').value = data.gravity;
+        if (data.gAngle) $('gAngle').value = data.gAngle;
+        if (data.damping) $('damping').value = data.damping;
+        if (data.wind) $('wind').value = data.wind;
+        updateLabels();
+        $('status').textContent = 'Scene loaded';
+      } catch (err) {
+        $('status').textContent = 'Load failed: bad JSON';
+      }
+    }
+
+    $('saveBtn').addEventListener('click', () => {
+      localStorage.setItem('grok-physics-scene', serialize());
+      $('status').textContent = 'Scene saved to localStorage';
+    });
+    $('loadBtn').addEventListener('click', () => {
+      const raw = localStorage.getItem('grok-physics-scene');
+      if (raw) deserialize(raw);
+      else $('status').textContent = 'No saved scene found';
+    });
+    $('exportBtn').addEventListener('click', () => {
+      const blob = new Blob([serialize()], { type: 'application/json' });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `grok-physics-${Date.now()}.json`;
+      a.click();
+    });
+    $('importBtn').addEventListener('click', () => $('fileInput').click());
+    $('fileInput').addEventListener('change', e => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => deserialize(reader.result);
+      reader.readAsText(file);
+    });
+
+    $('pauseBtn').addEventListener('click', () => {
+      paused = !paused;
+      $('pauseBtn').textContent = paused ? 'Resume' : 'Pause';
+    });
+
+    // ===== Loop =====
+    function update() {
+      if (paused) return;
+      const { gx, gy } = getGravity();
+      const damp = parseFloat($('damping').value);
+      const wind = parseFloat($('wind').value);
+
+      // attractors
+      attractors = attractors.filter(a => {
+        a.life--;
+        if (a.life <= 0) return false;
+        const str = a.strength * (a.life / a.maxLife);
+        particles.forEach(p => {
+          if (p.fixed) return;
+          const dx = a.x - p.x, dy = a.y - p.y;
+          const dist = Math.hypot(dx, dy) || 1;
+          const f = Math.min(str * 40 / (dist * dist), 1.2);
+          p.x += (dx / dist) * f;
+          p.y += (dy / dist) * f;
+        });
+        return true;
+      });
+
+      // mouse force while holding in select/add modes (gentle)
+      if (mouse.down && (tool === 'select' || tool === 'add') && !dragging) {
+        particles.forEach(p => {
+          if (p.fixed) return;
+          const dx = mouse.x - p.x, dy = mouse.y - p.y;
+          const dist = Math.hypot(dx, dy) || 1;
+          if (dist < 160) {
+            const f = 0.8 / (dist * 0.08);
+            p.x += (dx / dist) * f;
+            p.y += (dy / dist) * f;
+          }
+        });
+      }
+
+      particles.forEach(p => p.update(gx, gy, damp, wind));
+      // multiple constraint iterations for stability
+      for (let i = 0; i < 4; i++) {
+        springs.forEach(s => s.solve());
+        collide();
+      }
+      particles.forEach(p => p.constrain(W, H));
+    }
+
+    function draw() {
+      // fade trails
+      ctx.fillStyle = 'rgba(2, 3, 8, 0.28)';
+      ctx.fillRect(0, 0, W, H);
+
+      // attractors
+      attractors.forEach(a => {
+        const alpha = a.life / a.maxLife;
+        ctx.beginPath();
+        ctx.arc(a.x, a.y, 12 + (1 - alpha) * 40, 0, Math.PI * 2);
+        ctx.strokeStyle = `rgba(0, 229, 255, ${alpha * 0.5})`;
+        ctx.lineWidth = 2;
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(a.x, a.y, 4, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(124, 92, 255, ${alpha})`;
+        ctx.fill();
+      });
+
+      // springs
+      ctx.lineWidth = 1.5;
+      springs.forEach(s => {
+        ctx.beginPath();
+        ctx.moveTo(s.a.x, s.a.y);
+        ctx.lineTo(s.b.x, s.b.y);
+        ctx.strokeStyle = 'rgba(124, 92, 255, 0.55)';
+        ctx.stroke();
+      });
+
+      // particles
+      particles.forEach(p => {
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
+        if (p.fixed) {
+          ctx.fillStyle = `hsla(${p.hue}, 90%, 55%, 0.95)`;
+          ctx.fill();
+          ctx.strokeStyle = 'rgba(255,220,100,0.7)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        } else {
+          ctx.fillStyle = `hsla(${p.hue}, 85%, 65%, 0.9)`;
+          ctx.fill();
+        }
+        if (p === selected || p === springFirst) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.radius + 5, 0, Math.PI * 2);
+          ctx.strokeStyle = 'rgba(0, 229, 255, 0.9)';
+          ctx.lineWidth = 2;
+          ctx.stroke();
+        }
+      });
+    }
+
+    function loop() {
+      update();
+      draw();
+      requestAnimationFrame(loop);
+    }
+
+    // boot with a friendly soft blob so the canvas never feels empty
+    loadPreset('blob');
+    $('status').textContent = 'Soft Blob ready · Session 4 · play with forces & springs';
+    loop();
+  </script>
+</body>
+</html>

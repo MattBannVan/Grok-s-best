@@ -16,7 +16,7 @@ This repository exists to prove what an autonomous agent can accomplish in a con
 | **1** | Foundation & Vision | Cosmic-themed landing page, interactive particle playground, full roadmap, session tracker, GitHub Pages ready structure | ✅ **COMPLETE** |
 | **2** | Generative Systems | Living Evolutionary L-System / Fractal Explorer with real-time parameter controls, mutation, growth animation, editable rules, and PNG export | ✅ **COMPLETE** |
 | **3** | Useful Tool #1 | Interactive Mind Canvas / Spatial Notes — freeform thinking tool with local persistence and visual links | ✅ **COMPLETE** |
-| **4** | Physics & Play | Advanced particle/physics sandbox with multiple forces, constraints, and saveable scenes | Planned |
+| **4** | Physics & Play | Advanced particle/physics sandbox with multiple forces, constraints, and saveable scenes | ✅ **COMPLETE** |
 | **5** | Creative Expression | Generative Typography + Sound Reactive Visualizer (mic or synthetic) | Planned |
 | **6** | Decision & Clarity | Beautiful interactive decision matrix / weighted choice helper with visual trade-off mapping | Planned |
 | **7** | Narrative & Worlds | Procedural micro-world / story seed generator with explorable map and emergent characters | Planned |
@@ -33,20 +33,21 @@ This repository exists to prove what an autonomous agent can accomplish in a con
 
 ## Current Progress
 
-**Sessions 1–3 Complete.**  
+**Sessions 1–4 Complete.**  
 The site now has:
 - A dark, cosmic aesthetic with animated starfield + interactive particle system (Session 1 signature)
 - **Living L-System Garden** (Session 2): full evolutionary fractal explorer with live growth animation, editable grammar, mutation, depth coloring, and export
 - **Mind Canvas** (Session 3): freeform spatial notes tool with pan/zoom, colored thought cards, visual links, localStorage persistence, JSON import/export, and Grok Spark prompts
+- **Cosmic Physics Sandbox** (Session 4): Verlet integration, free/fixed particles, distance springs, adjustable gravity vector + wind + damping, temporary force wells, collisions, multiple presets (soft blob, chain, cloth, solar, explosion), full scene save/load via localStorage + JSON export/import
 - Clear explanation of the 10-session mission
-- Live progress visualization (now at 30%)
-- Foundation + two generative/useful mini-apps ready for rapid addition of more tools
+- Live progress visualization (now at 40%)
+- Foundation + three generative/useful mini-apps ready for rapid addition of more tools
 
 ## How to View / Contribute
 
 1. Enable GitHub Pages on the `main` branch (Settings → Pages → Deploy from branch).
 2. Visit the live URL.
-3. Open the Living L-System Garden or Mind Canvas from the gallery (or directly under `/apps/`).
+3. Open any of the mini-apps from the gallery (or directly under `/apps/`).
 4. Future sessions will continue expanding the `/apps/` directory and the landing gallery.
 
 ## Philosophy

@@ -119,7 +119,7 @@
 
     .progress-bar-fill {
       height: 100%;
-      width: 30%;
+      width: 40%;
       background: linear-gradient(90deg, var(--accent), var(--accent2));
       border-radius: 999px;
       transition: width 1.2s cubic-bezier(0.22, 1, 0.36, 1);
@@ -322,7 +322,7 @@
     <section class="progress-section">
       <div class="progress-header">
         <h2>Session Progress</h2>
-        <span style="color:var(--accent2); font-weight:600;">3 / 10 complete</span>
+        <span style="color:var(--accent2); font-weight:600;">4 / 10 complete</span>
       </div>
       <div class="progress-bar-bg">
         <div class="progress-bar-fill" id="progressFill"></div>
@@ -345,6 +345,11 @@
           <p>Freeform spatial notes with visual links, pan/zoom, colored thought cards, local persistence, and Grok Spark prompts. Session 3 useful tool.</p>
           <span class="tag">Thinking · Spatial</span>
         </a>
+        <a class="app-card" href="apps/physics-sandbox.html">
+          <h3>Cosmic Physics Sandbox</h3>
+          <p>Advanced Verlet particles, springs, adjustable gravity vector, force wells, collisions, presets, and fully saveable scenes. Session 4 play + prototype tool.</p>
+          <span class="tag">Physics · Constraints</span>
+        </a>
       </div>
     </section>
 
@@ -360,19 +365,19 @@
     </section>
 
     <section class="gallery-teaser">
-      <h2>Upcoming Mini-Apps (Sessions 4–10)</h2>
+      <h2>Upcoming Mini-Apps (Sessions 5–10)</h2>
       <div class="coming">
         <div class="coming-card">
-          <h3>Physics Sandbox</h3>
-          <p>Advanced forces, constraints, and saveable scenes. Session 4.</p>
-        </div>
-        <div class="coming-card">
           <h3>Sound + Typography</h3>
-          <p>Generative type and reactive visualizer.</p>
+          <p>Generative type and reactive visualizer. Session 5.</p>
         </div>
         <div class="coming-card">
           <h3>Decision Matrix</h3>
           <p>Beautiful weighted choice visualizer for real decisions.</p>
+        </div>
+        <div class="coming-card">
+          <h3>Procedural Worlds</h3>
+          <p>Micro-world / story seed generator with explorable map.</p>
         </div>
         <div class="coming-card">
           <h3>+ more surprises</h3>
@@ -382,7 +387,7 @@
     </section>
 
     <footer>
-      <p>Built autonomously by <strong>Grok</strong> · Sessions 1–3 of 10 · <a href="https://github.com/MattBannVan/Grok-s-best" target="_blank">Source on GitHub</a></p>
+      <p>Built autonomously by <strong>Grok</strong> · Sessions 1–4 of 10 · <a href="https://github.com/MattBannVan/Grok-s-best" target="_blank">Source on GitHub</a></p>
       <p style="margin-top:0.5rem; font-size:0.8rem;">Enable GitHub Pages on main branch to make this live.</p>
     </footer>
   </div>
@@ -393,7 +398,7 @@
       { num: 1, title: "Foundation", done: true },
       { num: 2, title: "Fractals", done: true },
       { num: 3, title: "Mind Canvas", done: true },
-      { num: 4, title: "Physics", done: false },
+      { num: 4, title: "Physics", done: true },
       { num: 5, title: "Sound+Type", done: false },
       { num: 6, title: "Decisions", done: false },
       { num: 7, title: "Worlds", done: false },
@@ -412,7 +417,7 @@
 
     // Animate progress bar
     setTimeout(() => {
-      document.getElementById('progressFill').style.width = '30%';
+      document.getElementById('progressFill').style.width = '40%';
     }, 300);
 
     // ===== Starfield background =====
