@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cosmic Type Pulse — Grok's Best</title>
+  <meta name="description" content="Generative kinetic typography that lives and breathes with sound. Pure canvas + Web Audio. Session 5 of Grok's autonomous showcase." />
+  <style>
+    :root {
+      --bg: #05060a;
+      --surface: #0d1117;
+      --accent: #7c5cff;
+      --accent2: #00e5ff;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --glow: 0 0 30px rgba(124, 92, 255, 0.3);
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      line-height: 1.5;
+    }
+    header {
+      padding: 1.2rem 1.5rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      border-bottom: 1px solid rgba(255,255,255,0.06);
+      background: rgba(13,17,23,0.85);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.8rem;
+    }
+    .brand a {
+      color: var(--accent2);
+      text-decoration: none;
+      font-size: 0.9rem;
+    }
+    .brand h1 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      background: linear-gradient(120deg, #fff, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .badge {
+      font-size: 0.7rem;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      font-weight: 600;
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      gap: 0;
+      min-height: calc(100vh - 70px);
+    }
+    @media (max-width: 900px) {
+      .layout { grid-template-columns: 1fr; }
+    }
+    .sidebar {
+      background: var(--surface);
+      border-right: 1px solid rgba(255,255,255,0.06);
+      padding: 1.2rem;
+      overflow-y: auto;
+      max-height: calc(100vh - 70px);
+    }
+    .sidebar h2 {
+      font-size: 0.95rem;
+      color: var(--accent2);
+      margin-bottom: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    .control-group {
+      margin-bottom: 1.1rem;
+    }
+    label {
+      display: block;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.3rem;
+    }
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--accent);
+    }
+    .value {
+      font-size: 0.75rem;
+      color: var(--accent2);
+      float: right;
+    }
+    input[type="text"], select {
+      width: 100%;
+      background: #161b22;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: var(--text);
+      padding: 0.45rem 0.6rem;
+      border-radius: 8px;
+      font-size: 0.9rem;
+    }
+    .btn-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.8rem;
+    }
+    button {
+      background: linear-gradient(135deg, var(--accent), #5a3fd4);
+      color: white;
+      border: none;
+      padding: 0.5rem 0.9rem;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+    button:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 16px rgba(124, 92, 255, 0.45);
+    }
+    button.secondary {
+      background: #21262d;
+      border: 1px solid rgba(255,255,255,0.12);
+    }
+    button.active {
+      box-shadow: 0 0 0 2px var(--accent2);
+    }
+    .main {
+      position: relative;
+      background: #020308;
+      display: flex;
+      flex-direction: column;
+    }
+    #canvas {
+      flex: 1;
+      width: 100%;
+      display: block;
+      cursor: crosshair;
+    }
+    .status {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      background: rgba(0,0,0,0.65);
+      padding: 0.4rem 0.8rem;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      color: var(--muted);
+      pointer-events: none;
+    }
+    .hint {
+      font-size: 0.75rem;
+      color: var(--muted);
+      margin-top: 0.6rem;
+      line-height: 1.4;
+    }
+    .audio-level {
+      height: 6px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 3px;
+      margin-top: 0.4rem;
+      overflow: hidden;
+    }
+    .audio-level-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      transition: width 0.05s;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <a href="../index.html">← Grok's Best</a>
+      <h1>Cosmic Type Pulse</h1>
+      <span class="badge">Session 5</span>
+    </div>
+    <div style="font-size:0.85rem;color:var(--muted)">Kinetic typography + sound reactivity · pure canvas + Web Audio</div>
+  </header>
+
+  <div class="layout">
+    <aside class="sidebar">
+      <h2>Text</h2>
+      <div class="control-group">
+        <label>Phrase</label>
+        <input type="text" id="phrase" value="GROK" maxlength="24" />
+      </div>
+      <div class="btn-row">
+        <button id="formBtn">Form Text</button>
+        <button id="explodeBtn" class="secondary">Explode</button>
+      </div>
+
+      <h2 style="margin-top:1.4rem">Mode</h2>
+      <div class="control-group">
+        <select id="mode">
+          <option value="hold">Hold Form (reactive)</option>
+          <option value="dance">Free Dance</option>
+          <option value="wave">Wave Field</option>
+          <option value="orbit">Orbital Swarm</option>
+          <option value="shatter">Shatter & Reform</option>
+        </select>
+      </div>
+
+      <h2>Parameters</h2>
+      <div class="control-group">
+        <label>Particle Density <span class="value" id="densVal">1.0</span></label>
+        <input type="range" id="density" min="0.4" max="2.2" value="1.0" step="0.1" />
+      </div>
+      <div class="control-group">
+        <label>Size <span class="value" id="sizeVal">2.2</span></label>
+        <input type="range" id="size" min="1" max="5" value="2.2" step="0.1" />
+      </div>
+      <div class="control-group">
+        <label>Sensitivity <span class="value" id="sensVal">1.4</span></label>
+        <input type="range" id="sensitivity" min="0.3" max="3" value="1.4" step="0.1" />
+      </div>
+      <div class="control-group">
+        <label>Hue <span class="value" id="hueVal">210</span></label>
+        <input type="range" id="hue" min="0" max="360" value="210" step="1" />
+      </div>
+      <div class="control-group">
+        <label>Glow Strength <span class="value" id="glowVal">0.7</span></label>
+        <input type="range" id="glow" min="0" max="1.5" value="0.7" step="0.05" />
+      </div>
+
+      <h2>Audio</h2>
+      <div class="btn-row">
+        <button id="micBtn" class="secondary">Start Mic</button>
+        <button id="synthBtn" class="secondary">Synthetic Beat</button>
+        <button id="stopAudioBtn" class="secondary">Stop</button>
+      </div>
+      <div class="audio-level"><div class="audio-level-fill" id="levelFill"></div></div>
+      <p class="hint">Mic needs permission. Synthetic beat gives an instant demo pulse so you can play without speaking.</p>
+
+      <div class="btn-row" style="margin-top:1rem">
+        <button id="exportBtn" class="secondary">Export PNG</button>
+        <button id="randomPhraseBtn" class="secondary">Random Phrase</button>
+      </div>
+      <p class="hint">
+        Tip: Type a short word, hit Form, then start mic or synth. Bass pulses the glyphs, highs make the edges dance. Mode switches change how sound is interpreted.
+      </p>
+    </aside>
+
+    <div class="main">
+      <canvas id="canvas"></canvas>
+      <div class="status" id="status">Ready · Session 5 Cosmic Type Pulse</div>
+    </div>
+  </div>
+
+  <script>
+    // ===== Cosmic Type Pulse — Session 5 =====
+    const canvas = document.getElementById('canvas');
+    const ctx = canvas.getContext('2d');
+    let W, H, dpr;
+    let particles = [];
+    let phrase = 'GROK';
+    let mode = 'hold';
+    let audioCtx = null;
+    let analyser = null;
+    let dataArray = null;
+    let micStream = null;
+    let synthNodes = [];
+    let audioActive = false;
+    let time = 0;
+    let bass = 0, mid = 0, treble = 0, overall = 0;
+
+    const $ = id => document.getElementById(id);
+
+    function resize() {
+      dpr = window.devicePixelRatio || 1;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      W = rect.width;
+      H = rect.height;
+      canvas.width = W * dpr;
+      canvas.height = H * dpr;
+      canvas.style.width = W + 'px';
+      canvas.style.height = H + 'px';
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      if (particles.length) reform();
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    // UI labels
+    function updateLabels() {
+      $('densVal').textContent = parseFloat($('density').value).toFixed(1);
+      $('sizeVal').textContent = parseFloat($('size').value).toFixed(1);
+      $('sensVal').textContent = parseFloat($('sensitivity').value).toFixed(1);
+      $('hueVal').textContent = $('hue').value;
+      $('glowVal').textContent = parseFloat($('glow').value).toFixed(2);
+    }
+    ['density','size','sensitivity','hue','glow'].forEach(id => $(id).addEventListener('input', updateLabels));
+    updateLabels();
+
+    // Sample text into particle targets
+    function sampleText(text) {
+      const off = document.createElement('canvas');
+      const octx = off.getContext('2d');
+      const fontSize = Math.min(W * 0.22, 160);
+      off.width = W;
+      off.height = H;
+      octx.fillStyle = '#000';
+      octx.fillRect(0, 0, W, H);
+      octx.fillStyle = '#fff';
+      octx.font = `bold ${fontSize}px system-ui, sans-serif`;
+      octx.textAlign = 'center';
+      octx.textBaseline = 'middle';
+      octx.fillText(text, W / 2, H / 2);
+
+      const dens = parseFloat($('density').value);
+      const step = Math.max(3, Math.floor(6 / dens));
+      const img = octx.getImageData(0, 0, W, H);
+      const pts = [];
+      for (let y = 0; y < H; y += step) {
+        for (let x = 0; x < W; x += step) {
+          const i = (y * W + x) * 4;
+          if (img.data[i] > 128) {
+            pts.push({
+              tx: x, ty: y,
+              x: W / 2 + (Math.random() - 0.5) * W * 0.8,
+              y: H / 2 + (Math.random() - 0.5) * H * 0.8,
+              vx: 0, vy: 0,
+              life: 1,
+              phase: Math.random() * Math.PI * 2
+            });
+          }
+        }
+      }
+      // Cap for performance
+      if (pts.length > 1800) {
+        while (pts.length > 1800) pts.splice(Math.floor(Math.random() * pts.length), 1);
+      }
+      return pts;
+    }
+
+    function reform() {
+      phrase = $('phrase').value.trim() || 'GROK';
+      particles = sampleText(phrase);
+      $('status').textContent = `Formed “${phrase}” · ${particles.length} particles · ready for sound`;
+    }
+
+    function explode() {
+      particles.forEach(p => {
+        const a = Math.random() * Math.PI * 2;
+        const f = 4 + Math.random() * 10;
+        p.vx = Math.cos(a) * f;
+        p.vy = Math.sin(a) * f;
+      });
+      $('status').textContent = 'Exploded · particles free';
+    }
+
+    // Audio setup
+    function ensureAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 256;
+        analyser.smoothingTimeConstant = 0.75;
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+    }
+
+    async function startMic() {
+      stopAudio();
+      try {
+        ensureAudio();
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const src = audioCtx.createMediaStreamSource(micStream);
+        src.connect(analyser);
+        audioActive = true;
+        $('micBtn').classList.add('active');
+        $('status').textContent = 'Mic live · speak or play music near the mic';
+      } catch (e) {
+        $('status').textContent = 'Mic denied or unavailable · try Synthetic Beat';
+      }
+    }
+
+    function startSynth() {
+      stopAudio();
+      ensureAudio();
+      // Simple pulsing synth: kick + mid + high sparkle
+      const now = audioCtx.currentTime;
+      const master = audioCtx.createGain();
+      master.gain.value = 0.18;
+      master.connect(analyser);
+      analyser.connect(audioCtx.destination);
+
+      // Kick pulse every ~0.55s
+      function scheduleKick(t) {
+        const osc = audioCtx.createOscillator();
+        const g = audioCtx.createGain();
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(110, t);
+        osc.frequency.exponentialRampToValueAtTime(40, t + 0.18);
+        g.gain.setValueAtTime(0.9, t);
+        g.gain.exponentialRampToValueAtTime(0.001, t + 0.25);
+        osc.connect(g); g.connect(master);
+        osc.start(t); osc.stop(t + 0.3);
+        synthNodes.push(osc, g);
+      }
+      // Mid pad
+      const pad = audioCtx.createOscillator();
+      const padG = audioCtx.createGain();
+      pad.type = 'triangle';
+      pad.frequency.value = 220;
+      padG.gain.value = 0.08;
+      pad.connect(padG); padG.connect(master);
+      pad.start();
+      synthNodes.push(pad, padG);
+
+      // High shimmer
+      const high = audioCtx.createOscillator();
+      const highG = audioCtx.createGain();
+      high.type = 'sawtooth';
+      high.frequency.value = 880;
+      highG.gain.value = 0.03;
+      high.connect(highG); highG.connect(master);
+      high.start();
+      synthNodes.push(high, highG);
+
+      let next = now;
+      function loopKick() {
+        if (!audioActive) return;
+        scheduleKick(next);
+        next += 0.55;
+        setTimeout(loopKick, 550);
+      }
+      audioActive = true;
+      loopKick();
+      $('synthBtn').classList.add('active');
+      $('status').textContent = 'Synthetic beat running · pure generated pulse';
+    }
+
+    function stopAudio() {
+      audioActive = false;
+      $('micBtn').classList.remove('active');
+      $('synthBtn').classList.remove('active');
+      if (micStream) {
+        micStream.getTracks().forEach(t => t.stop());
+        micStream = null;
+      }
+      synthNodes.forEach(n => { try { n.stop?.(); n.disconnect?.(); } catch(e){} });
+      synthNodes = [];
+      $('levelFill').style.width = '0%';
+    }
+
+    function analyse() {
+      if (!analyser || !audioActive) {
+        bass = mid = treble = overall = 0;
+        return;
+      }
+      analyser.getByteFrequencyData(dataArray);
+      const n = dataArray.length;
+      let b = 0, m = 0, t = 0;
+      const third = Math.floor(n / 3);
+      for (let i = 0; i < third; i++) b += dataArray[i];
+      for (let i = third; i < 2 * third; i++) m += dataArray[i];
+      for (let i = 2 * third; i < n; i++) t += dataArray[i];
+      bass = (b / third) / 255;
+      mid = (m / third) / 255;
+      treble = (t / (n - 2 * third)) / 255;
+      overall = (bass * 0.5 + mid * 0.3 + treble * 0.2);
+      $('levelFill').style.width = Math.min(100, overall * 140) + '%';
+    }
+
+    // Physics + render
+    function update() {
+      time += 0.016;
+      analyse();
+      const sens = parseFloat($('sensitivity').value);
+      const size = parseFloat($('size').value);
+      const baseHue = parseFloat($('hue').value);
+      const glow = parseFloat($('glow').value);
+      mode = $('mode').value;
+
+      const attract = 0.08 + bass * 0.12 * sens;
+      const jitter = treble * 4 * sens;
+      const pulse = 1 + bass * 0.35 * sens;
+
+      particles.forEach(p => {
+        let fx = 0, fy = 0;
+
+        if (mode === 'hold' || mode === 'shatter') {
+          const dx = p.tx - p.x;
+          const dy = p.ty - p.y;
+          fx += dx * attract;
+          fy += dy * attract;
+          // shatter temporarily weakens attraction on loud bass
+          if (mode === 'shatter' && bass > 0.55) {
+            fx *= 0.15; fy *= 0.15;
+            fx += (Math.random() - 0.5) * 8;
+            fy += (Math.random() - 0.5) * 8;
+          }
+        } else if (mode === 'dance') {
+          fx += Math.sin(time * 2 + p.phase) * mid * 3 * sens;
+          fy += Math.cos(time * 1.7 + p.phase) * mid * 3 * sens;
+          fx += (Math.random() - 0.5) * jitter;
+          fy += (Math.random() - 0.5) * jitter;
+        } else if (mode === 'wave') {
+          const wave = Math.sin(p.tx * 0.02 + time * 3) * mid * 18 * sens;
+          fy += wave;
+          fx += Math.cos(p.ty * 0.015 + time * 2.2) * treble * 8;
+        } else if (mode === 'orbit') {
+          const cx = W / 2, cy = H / 2;
+          const dx = p.x - cx, dy = p.y - cy;
+          const dist = Math.sqrt(dx * dx + dy * dy) || 1;
+          const ang = Math.atan2(dy, dx) + 0.02 + bass * 0.04;
+          const targetR = dist * (0.98 + bass * 0.04);
+          fx += (Math.cos(ang) * targetR + cx - p.x) * 0.06;
+          fy += (Math.sin(ang) * targetR + cy - p.y) * 0.06;
+        }
+
+        // Always a little home pull so text never fully disappears in reactive modes
+        if (mode !== 'dance') {
+          const dx = p.tx - p.x, dy = p.ty - p.y;
+          fx += dx * 0.012;
+          fy += dy * 0.012;
+        }
+
+        p.vx = (p.vx + fx) * 0.88;
+        p.vy = (p.vy + fy) * 0.88;
+        p.x += p.vx;
+        p.y += p.vy;
+
+        // soft bounds
+        if (p.x < -20) p.x = W + 20;
+        if (p.x > W + 20) p.x = -20;
+        if (p.y < -20) p.y = H + 20;
+        if (p.y > H + 20) p.y = -20;
+      });
+
+      // Draw
+      ctx.fillStyle = 'rgba(2, 3, 8, 0.28)';
+      ctx.fillRect(0, 0, W, H);
+
+      const r = size * pulse;
+      particles.forEach(p => {
+        const hue = (baseHue + p.phase * 20 + overall * 40) % 360;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, r, 0, Math.PI * 2);
+        ctx.fillStyle = `hsla(${hue}, 90%, 65%, 0.9)`;
+        ctx.fill();
+        if (glow > 0.05) {
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, r * (1.8 + glow), 0, Math.PI * 2);
+          ctx.fillStyle = `hsla(${hue}, 90%, 60%, ${0.12 * glow})`;
+          ctx.fill();
+        }
+      });
+
+      requestAnimationFrame(update);
+    }
+
+    // Events
+    $('formBtn').addEventListener('click', reform);
+    $('explodeBtn').addEventListener('click', explode);
+    $('micBtn').addEventListener('click', startMic);
+    $('synthBtn').addEventListener('click', startSynth);
+    $('stopAudioBtn').addEventListener('click', () => {
+      stopAudio();
+      $('status').textContent = 'Audio stopped';
+    });
+    $('exportBtn').addEventListener('click', () => {
+      const link = document.createElement('a');
+      link.download = `cosmic-type-pulse-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+    $('phrase').addEventListener('keydown', e => { if (e.key === 'Enter') reform(); });
+    $('randomPhraseBtn').addEventListener('click', () => {
+      const pool = ['GROK', 'AGENT', 'COSMIC', 'PULSE', 'CREATE', 'THINK', 'FLOW', 'GLOW', 'SPARK', 'EVOLVE', 'BUILD', 'DREAM'];
+      $('phrase').value = pool[Math.floor(Math.random() * pool.length)];
+      reform();
+    });
+
+    // Boot
+    reform();
+    update();
+  </script>
+</body>
+</html>
