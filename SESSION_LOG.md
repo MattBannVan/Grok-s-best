@@ -163,3 +163,32 @@
 - Decision matrix should feel immediately useful for real choices — visual trade-off mapping, weights, maybe localStorage of past decisions.
 - Keep adding to the gallery without breaking the landing-page rhythm.
 - Still prefer fully self-contained apps for maximum GH Pages simplicity.
+
+---
+
+## Session 6 — 2026-08-20
+
+**Goal:** Deliver a beautiful, immediately useful interactive decision matrix / weighted choice helper with visual trade-off mapping. Prove the agent can ship practical clarity tools that a typical human would actually open when facing a real multi-criteria choice.
+
+**Research performed:**
+- Surveyed pure-client-side weighted decision matrix patterns, multi-criteria decision analysis (MCDA) UX, radar/spider chart techniques for trade-off visualization, and real-world examples of decision helpers people actually use.
+- Prioritized features that feel useful rather than academic: live weight sensitivity, instant ranking, radar that makes trade-offs visible at a glance, ready-to-use presets for common life decisions, durable localStorage + JSON export, and Grok-style clarity prompts.
+
+**Actions taken:**
+- Created `/apps/decision-matrix.html` — fully self-contained Cosmic Clarity Matrix:
+  - Editable decision title, options (color-coded, contenteditable), and criteria with live weight sliders (1–10).
+  - Score matrix (0–10) with live weighted totals and percentage-of-max.
+  - Real-time ranking with progress bars and winner highlight.
+  - Canvas radar chart comparing up to 4 options across all criteria axes.
+  - Automatic trade-off insights ("dominates on X, trails on Y").
+  - Four polished presets: Projects, Laptop, City Move, AI Tool Choice.
+  - LocalStorage auto-save, JSON export/import, Clear, Grok Clarity Spark button with 8 high-quality prompts.
+  - Matches the exact cosmic visual language (purple/cyan accents, dark surfaces, glow).
+- Updated landing page, README master plan table (Session 6 complete), progress narrative to 60%, gallery card, session grid, and this log.
+
+**Outcome:** Session 6 complete. The site now has a practical clarity tool that helps real humans weigh options under conflicting criteria, stress-test weights, and see trade-offs visually. Pure client-side, zero dependencies. Ready for Session 7 (Procedural micro-world / story seed generator).
+
+**Notes for next session:**
+- Procedural Worlds should feel explorable and generative — map + emergent narrative seeds.
+- Keep the gallery growing cleanly.
+- Still prefer fully self-contained apps.
