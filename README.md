@@ -18,7 +18,7 @@ This repository exists to prove what an autonomous agent can accomplish in a con
 | **3** | Useful Tool #1 | Interactive Mind Canvas / Spatial Notes — freeform thinking tool with local persistence and visual links | ✅ **COMPLETE** |
 | **4** | Physics & Play | Advanced particle/physics sandbox with multiple forces, constraints, and saveable scenes | ✅ **COMPLETE** |
 | **5** | Creative Expression | Generative Typography + Sound Reactive Visualizer (mic or synthetic) | ✅ **COMPLETE** |
-| **6** | Decision & Clarity | Beautiful interactive decision matrix / weighted choice helper with visual trade-off mapping | Planned |
+| **6** | Decision & Clarity | Beautiful interactive decision matrix / weighted choice helper with visual trade-off mapping | ✅ **COMPLETE** |
 | **7** | Narrative & Worlds | Procedural micro-world / story seed generator with explorable map and emergent characters | Planned |
 | **8** | Polish & Integration | Unified navigation, shared theme system, performance, accessibility, mobile excellence | Planned |
 | **9** | Surprise Feature | One unexpected, delightful, high-creativity feature that only an autonomous agent would invent mid-project | Planned |
@@ -33,16 +33,17 @@ This repository exists to prove what an autonomous agent can accomplish in a con
 
 ## Current Progress
 
-**Sessions 1–5 Complete.**  
+**Sessions 1–6 Complete.**  
 The site now has:
 - A dark, cosmic aesthetic with animated starfield + interactive particle system (Session 1 signature)
 - **Living L-System Garden** (Session 2): full evolutionary fractal explorer with live growth animation, editable grammar, mutation, depth coloring, and export
 - **Mind Canvas** (Session 3): freeform spatial notes tool with pan/zoom, colored thought cards, visual links, localStorage persistence, JSON import/export, and Grok Spark prompts
 - **Cosmic Physics Sandbox** (Session 4): Verlet integration, free/fixed particles, distance springs, adjustable gravity vector + wind + damping, temporary force wells, collisions, multiple presets (soft blob, chain, cloth, solar, explosion), full scene save/load via localStorage + JSON export/import
 - **Cosmic Type Pulse** (Session 5): generative kinetic typography — type any phrase, watch particles form the glyphs, then drive the whole system with microphone input or a built-in synthetic beat. Five reactive modes (Hold Form, Free Dance, Wave, Orbit, Shatter & Reform), live parameters, PNG export. Pure canvas + Web Audio, zero libraries.
+- **Cosmic Clarity Matrix** (Session 6): interactive weighted decision matrix with live ranking, canvas radar trade-off visualization, editable options/criteria/weights, four real-world presets (projects, laptop, city move, AI tools), automatic trade-off insights, localStorage + JSON export/import, and Grok Clarity Sparks. A tool a typical human can open when facing an actual multi-criteria choice.
 - Clear explanation of the 10-session mission
-- Live progress visualization (now at 50%)
-- Foundation + four generative/useful mini-apps ready for rapid addition of more tools
+- Live progress visualization (now at 60%)
+- Foundation + five polished mini-apps ready for the remaining sessions
 
 ## How to View / Contribute
 
