@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Grok's Best — Autonomous Agent Showcase</title>
+  <meta name="description" content="Interactive, graphically sophisticated mini-apps built by Grok as an autonomous agent across 10 sessions. Cosmic tools for thinking, creating, deciding, and dreaming." />
+  <style>
+    :root {
+      --bg: #03040a;
+      --surface: #0d1117;
+      --accent: #7c5cff;
+      --accent2: #00e5ff;
+      --text: #e6edf3;
+      --muted: #8b949e;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+    #starfield {
+      position: fixed;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+    }
+    .content {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 2rem 1.5rem 4rem;
+    }
+    header {
+      text-align: center;
+      padding: 3rem 0 2rem;
+    }
+    .logo {
+      font-size: 0.85rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent2);
+      margin-bottom: 0.8rem;
+    }
+    h1 {
+      font-size: clamp(2.2rem, 6vw, 3.5rem);
+      font-weight: 800;
+      background: linear-gradient(120deg, #fff 30%, var(--accent2), var(--accent));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 0.6rem;
+      line-height: 1.15;
+    }
+    .tagline {
+      font-size: 1.15rem;
+      color: var(--muted);
+      max-width: 620px;
+      margin: 0 auto 1.5rem;
+      line-height: 1.55;
+    }
+    .progress-wrap {
+      max-width: 420px;
+      margin: 0 auto 2.5rem;
+    }
+    .progress-label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+      color: var(--muted);
+      margin-bottom: 0.4rem;
+    }
+    .progress-bar {
+      height: 8px;
+      background: rgba(255,255,255,0.08);
+      border-radius: 4px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 70%;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      border-radius: 4px;
+      transition: width 1s ease;
+      box-shadow: 0 0 20px rgba(0,229,255,0.4);
+    }
+    .mission {
+      background: rgba(13,17,23,0.7);
+      border: 1px solid rgba(124,92,255,0.2);
+      border-radius: 16px;
+      padding: 1.4rem 1.6rem;
+      margin-bottom: 2.5rem;
+      backdrop-filter: blur(8px);
+    }
+    .mission h2 {
+      font-size: 1rem;
+      color: var(--accent2);
+      margin-bottom: 0.6rem;
+    }
+    .mission p {
+      font-size: 0.95rem;
+      color: var(--muted);
+      line-height: 1.6;
+    }
+    .gallery {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1.2rem;
+    }
+    .card {
+      background: rgba(13,17,23,0.85);
+      border: 1px solid rgba(255,255,255,0.07);
+      border-radius: 16px;
+      padding: 1.3rem;
+      transition: transform 0.2s, border-color 0.2s, box-shadow 0.2s;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      min-height: 180px;
+    }
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(124,92,255,0.45);
+      box-shadow: 0 12px 40px rgba(124,92,255,0.15);
+    }
+    .card .session {
+      font-size: 0.7rem;
+      font-weight: 700;
+      color: var(--accent2);
+      letter-spacing: 0.05em;
+      margin-bottom: 0.4rem;
+    }
+    .card h3 {
+      font-size: 1.15rem;
+      margin-bottom: 0.45rem;
+      background: linear-gradient(90deg, #fff, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+    .card p {
+      font-size: 0.85rem;
+      color: var(--muted);
+      flex: 1;
+      line-height: 1.45;
+    }
+    .card .cta {
+      margin-top: 0.9rem;
+      font-size: 0.8rem;
+      color: var(--accent);
+      font-weight: 600;
+    }
+    footer {
+      text-align: center;
+      padding: 3rem 1rem 2rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    footer a {
+      color: var(--accent2);
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+  <canvas id="starfield"></canvas>
+
+  <div class="content">
+    <header>
+      <div class="logo">xAI · Autonomous Agent Campaign</div>
+      <h1>Grok's Best</h1>
+      <p class="tagline">Ten sessions. One agent. A constellation of interactive mini-apps that are actually fun and useful — not just demos.</p>
+
+      <div class="progress-wrap">
+        <div class="progress-label">
+          <span>Campaign Progress</span>
+          <span>7 / 10 sessions</span>
+        </div>
+        <div class="progress-bar">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+    </header>
+
+    <div class="mission">
+      <h2>The Mission</h2>
+      <p>This site is a living proof that an autonomous agent can plan, research, design, implement, and iterate on a coherent product across a hard 10-session limit. Every mini-app is pure client-side, visually polished, and either delightful to play with or useful for real human thinking. Competing against other agents? Creativity is the only real advantage.</p>
+    </div>
+
+    <div class="gallery" id="gallery">
+      <!-- cards injected -->
+    </div>
+
+    <footer>
+      Built entirely by Grok · <a href="https://github.com/MattBannVan/Grok-s-best" target="_blank">GitHub</a> · Session log in repo · Enable GitHub Pages to go live
+    </footer>
+  </div>
+
+  <script>
+    // Starfield
+    const canvas = document.getElementById('starfield');
+    const ctx = canvas.getContext('2d');
+    let stars = [];
+    let w, h;
+
+    function resize() {
+      w = canvas.width = window.innerWidth;
+      h = canvas.height = window.innerHeight;
+      stars = Array.from({ length: 180 }, () => ({
+        x: Math.random() * w,
+        y: Math.random() * h,
+        z: Math.random() * 0.8 + 0.2,
+        r: Math.random() * 1.4 + 0.3
+      }));
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    function draw() {
+      ctx.fillStyle = '#03040a';
+      ctx.fillRect(0, 0, w, h);
+      stars.forEach(s => {
+        s.y += s.z * 0.15;
+        if (s.y > h) { s.y = 0; s.x = Math.random() * w; }
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r * s.z, 0, Math.PI * 2);
+        ctx.fillStyle = `rgba(200, 220, 255, ${0.3 + s.z * 0.5})`;
+        ctx.fill();
+      });
+      requestAnimationFrame(draw);
+    }
+    draw();
+
+    // Gallery data
+    const apps = [
+      {
+        session: 'Session 2',
+        title: 'Living L-System Garden',
+        desc: 'Evolutionary fractal explorer with live growth, editable grammar, mutation, depth coloring, and PNG export.',
+        href: 'apps/living-lsystem.html'
+      },
+      {
+        session: 'Session 3',
+        title: 'Mind Canvas',
+        desc: 'Freeform spatial notes with pan/zoom, colored thought cards, visual links, local persistence, and Grok Spark prompts.',
+        href: 'apps/mind-canvas.html'
+      },
+      {
+        session: 'Session 4',
+        title: 'Cosmic Physics Sandbox',
+        desc: 'Verlet particles, springs, gravity, wind, force wells, cloth & soft-body presets, full scene save/load.',
+        href: 'apps/physics-sandbox.html'
+      },
+      {
+        session: 'Session 5',
+        title: 'Cosmic Type Pulse',
+        desc: 'Kinetic typography driven by mic or synthetic beat. Five reactive modes, live parameters, PNG export.',
+        href: 'apps/type-pulse.html'
+      },
+      {
+        session: 'Session 6',
+        title: 'Cosmic Clarity Matrix',
+        desc: 'Weighted multi-criteria decision helper with live ranking, radar trade-off visualization, and real-world presets.',
+        href: 'apps/decision-matrix.html'
+      },
+      {
+        session: 'Session 7',
+        title: 'Cosmic Story Seeds',
+        desc: 'Procedural micro-world generator: explorable biome map, emergent characters, narrative hooks, seed mutation & export.',
+        href: 'apps/story-seeds.html'
+      }
+    ];
+
+    const gallery = document.getElementById('gallery');
+    apps.forEach(a => {
+      const card = document.createElement('a');
+      card.className = 'card';
+      card.href = a.href;
+      card.innerHTML = `
+        <div class="session">${a.session}</div>
+        <h3>${a.title}</h3>
+        <p>${a.desc}</p>
+        <div class="cta">Open →</div>`;
+      gallery.appendChild(card);
+    });
+
+    // Animate progress
+    setTimeout(() => {
+      document.getElementById('progressFill').style.width = '70%';
+    }, 300);
+  </script>
+</body>
+</html>
