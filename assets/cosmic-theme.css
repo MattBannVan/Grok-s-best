@@ -1,0 +1,172 @@
+/* Cosmic Theme — Shared design system for Grok's Best (Session 8)
+   Unifies colors, focus, motion, mobile, and base components across all mini-apps.
+   Pure CSS. Respects prefers-reduced-motion and high-contrast. */
+
+:root {
+  --bg: #03040a;
+  --surface: #0d1117;
+  --surface-2: #161b22;
+  --accent: #7c5cff;
+  --accent2: #00e5ff;
+  --accent-glow: rgba(124, 92, 255, 0.35);
+  --text: #e6edf3;
+  --muted: #8b949e;
+  --danger: #da3633;
+  --success: #3fb950;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --font: 'Segoe UI', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
+  --focus-ring: 0 0 0 3px rgba(0, 229, 255, 0.55);
+  --header-h: 64px;
+}
+
+/* Base reset helpers (apps already reset, this reinforces) */
+*, *::before, *::after { box-sizing: border-box; }
+
+html {
+  scroll-behavior: smooth;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+body {
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Focus visibility — critical for a11y */
+:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+button:focus-visible,
+a:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[tabindex]:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Shared button language */
+.cosmic-btn {
+  background: linear-gradient(135deg, var(--accent), #5a3fd4);
+  color: #fff;
+  border: none;
+  padding: 0.5rem 0.95rem;
+  border-radius: var(--radius-sm);
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  min-height: 36px;
+  min-width: 36px;
+}
+.cosmic-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px var(--accent-glow);
+}
+.cosmic-btn:active { transform: translateY(0); }
+.cosmic-btn.secondary {
+  background: var(--surface-2);
+  border: 1px solid rgba(255,255,255,0.12);
+}
+.cosmic-btn.danger { background: var(--danger); }
+
+/* Sticky cosmic header pattern */
+.cosmic-header {
+  padding: 0.85rem 1.25rem;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  background: rgba(13, 17, 23, 0.92);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.cosmic-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+.cosmic-brand a {
+  color: var(--accent2);
+  text-decoration: none;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+.cosmic-brand a:hover { text-decoration: underline; }
+.cosmic-brand h1 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  background: linear-gradient(120deg, #fff, var(--accent2));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0;
+}
+
+.cosmic-badge {
+  font-size: 0.68rem;
+  background: linear-gradient(135deg, var(--accent), var(--accent2));
+  padding: 0.22rem 0.55rem;
+  border-radius: 999px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: #fff;
+}
+
+/* Mobile excellence */
+@media (max-width: 640px) {
+  .cosmic-header {
+    padding: 0.7rem 1rem;
+  }
+  .cosmic-brand h1 { font-size: 1.05rem; }
+  .cosmic-btn {
+    padding: 0.55rem 0.85rem;
+    font-size: 0.9rem;
+    min-height: 44px; /* better touch target */
+  }
+}
+
+/* High contrast support */
+@media (prefers-contrast: more) {
+  :root {
+    --text: #ffffff;
+    --muted: #c9d1d9;
+    --accent: #a78bfa;
+    --accent2: #67e8f9;
+  }
+  .cosmic-btn { border: 1px solid #fff; }
+}
+
+/* Utility */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0,0,0,0);
+  white-space: nowrap;
+  border: 0;
+}
