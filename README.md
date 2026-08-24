@@ -20,7 +20,7 @@ This repository exists to prove what an autonomous agent can accomplish in a con
 | **5** | Creative Expression | Generative Typography + Sound Reactive Visualizer (mic or synthetic) | ✅ **COMPLETE** |
 | **6** | Decision & Clarity | Beautiful interactive decision matrix / weighted choice helper with visual trade-off mapping | ✅ **COMPLETE** |
 | **7** | Narrative & Worlds | Procedural micro-world / story seed generator with explorable map and emergent characters | ✅ **COMPLETE** |
-| **8** | Polish & Integration | Unified navigation, shared theme system, performance, accessibility, mobile excellence | Planned |
+| **8** | Polish & Integration | Unified navigation, shared theme system, performance, accessibility, mobile excellence | ✅ **COMPLETE** |
 | **9** | Surprise Feature | One unexpected, delightful, high-creativity feature that only an autonomous agent would invent mid-project | Planned |
 | **10** | Final Showcase | Documentation, session retrospective, performance optimization, public announcement assets, "what a human can take away" guide | Planned |
 
@@ -33,18 +33,20 @@ This repository exists to prove what an autonomous agent can accomplish in a con
 
 ## Current Progress
 
-**Sessions 1–7 Complete (70%).**  
+**Sessions 1–8 Complete (80%).**  
 The site now has:
-- A dark, cosmic aesthetic with animated starfield on the landing page + consistent theme across apps
+- A dark, cosmic aesthetic with animated starfield on the landing page + **shared Cosmic Theme system** (`assets/cosmic-theme.css`) across every page
+- **Floating Cosmic Orb** (`assets/cosmic-nav.js`): unified, accessible, keyboard-first navigation present on the hub and all six mini-apps. Glowing orb → constellation menu. Current page highlighted. Campaign progress shown live.
 - **Living L-System Garden** (Session 2): full evolutionary fractal explorer with live growth animation, editable grammar, mutation, depth coloring, and export
 - **Mind Canvas** (Session 3): freeform spatial notes tool with pan/zoom, colored thought cards, visual links, localStorage persistence, JSON import/export, and Grok Spark prompts
 - **Cosmic Physics Sandbox** (Session 4): Verlet integration, free/fixed particles, distance springs, adjustable gravity vector + wind + damping, temporary force wells, collisions, multiple presets (soft blob, chain, cloth, solar, explosion), full scene save/load via localStorage + JSON export/import
 - **Cosmic Type Pulse** (Session 5): generative kinetic typography — type any phrase, watch particles form the glyphs, then drive the whole system with microphone input or a built-in synthetic beat. Five reactive modes (Hold Form, Free Dance, Wave, Orbit, Shatter & Reform), live parameters, PNG export. Pure canvas + Web Audio, zero libraries.
 - **Cosmic Clarity Matrix** (Session 6): interactive weighted decision matrix with live ranking, canvas radar trade-off visualization, editable options/criteria/weights, four real-world presets (projects, laptop, city move, AI tools), automatic trade-off insights, localStorage + JSON export/import, and Grok Clarity Sparks. A tool a typical human can open when facing an actual multi-criteria choice.
 - **Cosmic Story Seeds** (Session 7): procedural micro-world generator with explorable biome map, emergent characters, narrative conflict hooks, seed mutation, local persistence, and exportable story JSON. A playground for writers, GMs, and daydreamers. Click regions to reveal secrets.
+- Session 8 polish: focus-visible rings, prefers-reduced-motion, prefers-contrast, larger mobile touch targets, ARIA progressbar & menu roles, semantic gallery
 - Clear explanation of the 10-session mission
-- Live progress visualization (now at 70%)
-- Fully restored cosmic landing page with gallery of all six mini-apps
+- Live progress visualization (now at 80%)
+- Fully restored cosmic landing page with gallery of all six mini-apps + polish callout
 
 ## How to View / Contribute
 
