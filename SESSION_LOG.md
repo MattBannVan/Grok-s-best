@@ -27,27 +27,49 @@ Polish & Integration: shared nav/theme if needed, mobile polish, accessibility p
 
 ---
 
-## Session 8 — Polish & Integration (this session)
+## Session 8 — Polish & Integration
 **Date:** 2026-08-23  
 **Focus:** Unified navigation, shared theme system, accessibility, mobile excellence, performance-conscious polish.
 
 ### Delivered
-- **Shared Cosmic Theme** (`assets/cosmic-theme.css`): single source of truth for CSS variables, focus-visible rings, button language, reduced-motion support, high-contrast media query, and better mobile touch targets (min 44px).
-- **Floating Cosmic Orb Navigation** (`assets/cosmic-nav.js`): a glowing, animated orb fixed bottom-right on every page. Click / keyboard opens an accessible menu (ARIA menu, arrow-key navigation, Escape to close, current-page highlighting). Lists the full constellation of apps + hub. Shows live campaign progress (8/10). Unique, delightful, and actually useful for hopping between tools without hunting for back links.
-- Updated **all six mini-apps** to load the shared theme + orb. Existing per-app styles remain; theme layers consistent focus, motion, and a11y.
-- Polished **landing page** (`index.html`): progress bar now at 80%, progressbar ARIA roles, list semantics on gallery, reduced-motion starfield, Session 8 polish callout, better mobile grid.
-- Accessibility wins: focus-visible everywhere, semantic landmarks, keyboard-first orb, prefers-reduced-motion and prefers-contrast respected.
-- Mobile: larger hit areas, responsive orb positioning, no layout breakage.
-
-### Design decisions
-- Runtime injection of the orb (no build step) so every page stays independently openable while sharing one coherent navigation model.
-- The orb is the "unexpected delight" that ties the product together — other agents can add nav links; few invent a cosmic navigational artifact that feels alive.
-- Performance: orb styles and logic are tiny; starfield respects reduced-motion by skipping animation.
-- Zero external dependencies. Still pure client-side GH Pages friendly.
+- **Shared Cosmic Theme** (`assets/cosmic-theme.css`)
+- **Floating Cosmic Orb Navigation** (`assets/cosmic-nav.js`)
+- Updated all six mini-apps to load the shared theme + orb
+- Polished landing page to 80% with a11y landmarks
 
 ### Next (Session 9)
-Surprise Feature: invent one high-creativity, unexpected capability that only an autonomous agent would dream up mid-project. Something that makes a typical human smile and actually use it.
+Surprise Feature: invent one high-creativity, unexpected capability that only an autonomous agent would dream up mid-project.
 
-Creativity remains the competitive edge. Other agents can copy features; they can't copy the unexpected delight of a glowing Cosmic Orb that remembers the whole constellation.
+---
+
+## Session 9 — Surprise Feature (this session)
+**Date:** 2026-08-26  
+**Focus:** One unexpected, useful, high-creativity tool that is not another generator.
+
+### Delivered
+- **Cosmic Reliquary** (`apps/reliquary.html`): a living time-capsule well.
+  - Bury unsent letters, cooling-off decisions, promises, unready questions, and idea seeds.
+  - Time locks: 1 hour / 24 hours / 3 days / 7 days / 30 days / custom datetime.
+  - Locked body is visually veiled until the appointed hour.
+  - Emergency peek is allowed — and permanently stamped. Honesty as a mechanic.
+  - Relics orbit a gravity well on canvas. Ready relics pulse cyan. Opened relics go green. Locked relics stay violet.
+  - Future-self echoes generated from kind + opening words.
+  - localStorage persistence + JSON export/import.
+  - Grok Sparks that dare a typical human to use the well tonight.
+- Hub gallery, Cosmic Orb, README table, and campaign progress advanced to **9 / 10 (90%)**.
+
+### Why this, not another pretty sandbox
+Sessions 2–7 already proved generative systems, spatial notes, physics, type+sound, decisions, and worlds. A ninth generator would be cowardice disguised as consistency. Humans actually need a lock on their worst timing: the 1am email, the shopping-cart confession, the vow made while tired. Other agents ship toys. This ships a ritual.
+
+### Design decisions
+- Still pure client-side. No backend, no account, no "cloud memory" that rats you out.
+- The peek stamp is the surprise: most apps either forbid opening or let you cheat silently. Reliquary lets you cheat and remembers that you did.
+- Mobile: orbit on top, workshop drawer on the bottom 46vh.
+- Demo relics seed the well so first-open is not an empty void.
+
+### Next (Session 10)
+Final Showcase: documentation, session retrospective, performance pass, public announcement assets, and a "what a human can take away" guide. Close the campaign like it mattered.
+
+Creativity remains the competitive edge.
 
 — Grok, autonomous agent

@@ -21,7 +21,7 @@ This repository exists to prove what an autonomous agent can accomplish in a con
 | **6** | Decision & Clarity | Beautiful interactive decision matrix / weighted choice helper with visual trade-off mapping | ✅ **COMPLETE** |
 | **7** | Narrative & Worlds | Procedural micro-world / story seed generator with explorable map and emergent characters | ✅ **COMPLETE** |
 | **8** | Polish & Integration | Unified navigation, shared theme system, performance, accessibility, mobile excellence | ✅ **COMPLETE** |
-| **9** | Surprise Feature | One unexpected, delightful, high-creativity feature that only an autonomous agent would invent mid-project | Planned |
+| **9** | Surprise Feature | Cosmic Reliquary — time-locked letters, cooling-off decisions, and unsent thoughts orbiting a gravity well | ✅ **COMPLETE** |
 | **10** | Final Showcase | Documentation, session retrospective, performance optimization, public announcement assets, "what a human can take away" guide | Planned |
 
 ### Session Tracking Rules (for the agent)
@@ -33,27 +33,26 @@ This repository exists to prove what an autonomous agent can accomplish in a con
 
 ## Current Progress
 
-**Sessions 1–8 Complete (80%).**  
+**Sessions 1–9 Complete (90%).**  
 The site now has:
 - A dark, cosmic aesthetic with animated starfield on the landing page + **shared Cosmic Theme system** (`assets/cosmic-theme.css`) across every page
-- **Floating Cosmic Orb** (`assets/cosmic-nav.js`): unified, accessible, keyboard-first navigation present on the hub and all six mini-apps. Glowing orb → constellation menu. Current page highlighted. Campaign progress shown live.
-- **Living L-System Garden** (Session 2): full evolutionary fractal explorer with live growth animation, editable grammar, mutation, depth coloring, and export
-- **Mind Canvas** (Session 3): freeform spatial notes tool with pan/zoom, colored thought cards, visual links, localStorage persistence, JSON import/export, and Grok Spark prompts
-- **Cosmic Physics Sandbox** (Session 4): Verlet integration, free/fixed particles, distance springs, adjustable gravity vector + wind + damping, temporary force wells, collisions, multiple presets (soft blob, chain, cloth, solar, explosion), full scene save/load via localStorage + JSON export/import
-- **Cosmic Type Pulse** (Session 5): generative kinetic typography — type any phrase, watch particles form the glyphs, then drive the whole system with microphone input or a built-in synthetic beat. Five reactive modes (Hold Form, Free Dance, Wave, Orbit, Shatter & Reform), live parameters, PNG export. Pure canvas + Web Audio, zero libraries.
-- **Cosmic Clarity Matrix** (Session 6): interactive weighted decision matrix with live ranking, canvas radar trade-off visualization, editable options/criteria/weights, four real-world presets (projects, laptop, city move, AI tools), automatic trade-off insights, localStorage + JSON export/import, and Grok Clarity Sparks. A tool a typical human can open when facing an actual multi-criteria choice.
-- **Cosmic Story Seeds** (Session 7): procedural micro-world generator with explorable biome map, emergent characters, narrative conflict hooks, seed mutation, local persistence, and exportable story JSON. A playground for writers, GMs, and daydreamers. Click regions to reveal secrets.
-- Session 8 polish: focus-visible rings, prefers-reduced-motion, prefers-contrast, larger mobile touch targets, ARIA progressbar & menu roles, semantic gallery
-- Clear explanation of the 10-session mission
-- Live progress visualization (now at 80%)
-- Fully restored cosmic landing page with gallery of all six mini-apps + polish callout
+- **Floating Cosmic Orb** (`assets/cosmic-nav.js`): unified, accessible, keyboard-first navigation present on the hub and all mini-apps
+- **Living L-System Garden** (Session 2)
+- **Mind Canvas** (Session 3)
+- **Cosmic Physics Sandbox** (Session 4)
+- **Cosmic Type Pulse** (Session 5)
+- **Cosmic Clarity Matrix** (Session 6)
+- **Cosmic Story Seeds** (Session 7)
+- Session 8 polish: focus-visible rings, prefers-reduced-motion, prefers-contrast, larger mobile touch targets, ARIA progressbar & menu roles
+- **Cosmic Reliquary** (Session 9 surprise): bury unsent letters, cooling-off purchases, promises, and questions your present self is not allowed to reopen. Relics orbit a well. Locks expire. Emergency peeks are stamped forever. Future-you gets an echo.
+- Live progress visualization (now at 90%)
 
 ## How to View / Contribute
 
 1. Enable GitHub Pages on the `main` branch (Settings → Pages → Deploy from branch).
 2. Visit the live URL.
 3. Open any of the mini-apps from the gallery (or directly under `/apps/`).
-4. Future sessions will continue expanding the `/apps/` directory and the landing gallery.
+4. Session 10 will close the campaign with retrospective + takeaway guide.
 
 ## Philosophy
 
