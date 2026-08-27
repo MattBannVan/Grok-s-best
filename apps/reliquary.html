@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cosmic Reliquary — Grok's Best</title>
+  <meta name="description" content="Bury letters, decisions, and unsent thoughts until a future you is allowed to open them. A living time-capsule orbit." />
+  <link rel="stylesheet" href="../assets/cosmic-theme.css" />
+  <style>
+    html, body { margin: 0; height: 100%; overflow: hidden; }
+    #stage { position: fixed; inset: 0; width: 100%; height: 100%; display: block; }
+    .panel { position: fixed; top: var(--header-h); right: 0; bottom: 0; width: min(380px, 100vw); overflow-y: auto; z-index: 20; background: rgba(13,17,23,0.88); border-left: 1px solid rgba(124,92,255,0.25); backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px); padding: 1rem 1.1rem 5.5rem; }
+    .stats { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 0.45rem; margin-bottom: 1rem; }
+    .stat { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.06); border-radius: 10px; padding: 0.55rem 0.4rem; text-align: center; }
+    .stat b { display: block; font-size: 1.15rem; color: var(--accent2); }
+    .stat span { font-size: 0.68rem; color: var(--muted); }
+    label { display: block; font-size: 0.72rem; color: var(--muted); margin: 0.55rem 0 0.25rem; letter-spacing: 0.04em; text-transform: uppercase; }
+    input, textarea, select { width: 100%; background: var(--surface-2); color: var(--text); border: 1px solid rgba(255,255,255,0.1); border-radius: 8px; padding: 0.55rem 0.65rem; font: inherit; }
+    textarea { min-height: 110px; resize: vertical; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem; }
+    .actions { display: flex; flex-wrap: wrap; gap: 0.45rem; margin-top: 0.85rem; }
+    .hint { font-size: 0.8rem; color: var(--muted); line-height: 1.5; margin: 0.4rem 0 0.8rem; }
+    .spark { margin-top: 1rem; padding: 0.75rem 0.8rem; border-radius: 10px; border: 1px dashed rgba(0,229,255,0.3); background: rgba(0,229,255,0.05); font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+    .spark strong { color: var(--accent2); }
+    .list { margin-top: 1.1rem; }
+    .relic-item { display: block; width: 100%; text-align: left; background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.07); border-radius: 10px; padding: 0.65rem 0.7rem; margin-bottom: 0.45rem; color: inherit; cursor: pointer; }
+    .relic-item:hover { border-color: rgba(124,92,255,0.4); }
+    .relic-item.ready { border-color: rgba(0,229,255,0.45); }
+    .relic-item .t { font-weight: 650; font-size: 0.9rem; }
+    .relic-item .m { font-size: 0.72rem; color: var(--muted); margin-top: 0.15rem; }
+    .modal-bg { position: fixed; inset: 0; background: rgba(3,4,10,0.72); z-index: 50; display: none; align-items: center; justify-content: center; padding: 1rem; }
+    .modal-bg.open { display: flex; }
+    .modal { width: min(520px, 100%); max-height: 86vh; overflow-y: auto; background: var(--surface); border: 1px solid rgba(124,92,255,0.35); border-radius: 16px; padding: 1.25rem 1.3rem 1.1rem; box-shadow: 0 24px 80px rgba(0,0,0,0.55), 0 0 40px rgba(124,92,255,0.18); }
+    .modal h2 { margin: 0 0 0.35rem; font-size: 1.25rem; }
+    .modal .meta { font-size: 0.78rem; color: var(--muted); margin-bottom: 0.9rem; }
+    .modal .body { white-space: pre-wrap; line-height: 1.6; font-size: 0.95rem; }
+    .echo { margin-top: 1rem; padding: 0.8rem; border-radius: 10px; background: rgba(124,92,255,0.12); border: 1px solid rgba(124,92,255,0.28); font-size: 0.86rem; line-height: 1.5; }
+    .locked-veil { filter: blur(5px); user-select: none; pointer-events: none; }
+    .hud { position: fixed; left: 1rem; bottom: 1.2rem; z-index: 15; font-size: 0.78rem; color: var(--muted); max-width: min(420px, calc(100vw - 420px)); background: rgba(13,17,23,0.55); padding: 0.55rem 0.75rem; border-radius: 10px; border: 1px solid rgba(255,255,255,0.06); }
+    @media (max-width: 820px) {
+      .panel { position: fixed; top: auto; left: 0; right: 0; bottom: 0; width: 100%; height: 46vh; border-left: none; border-top: 1px solid rgba(124,92,255,0.25); }
+      #stage { height: 54vh; }
+      .hud { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <header class="cosmic-header">
+    <div class="cosmic-brand">
+      <a href="../index.html">← Hub</a>
+      <h1>Cosmic Reliquary</h1>
+      <span class="cosmic-badge">Session 9 · Surprise</span>
+    </div>
+    <div class="actions" style="margin:0">
+      <button class="cosmic-btn secondary" id="btnExport">Export</button>
+      <button class="cosmic-btn secondary" id="btnImport">Import</button>
+      <input type="file" id="fileIn" accept="application/json" hidden />
+    </div>
+  </header>
+  <canvas id="stage" aria-label="Orbit of sealed relics around a gravity well"></canvas>
+  <div class="hud">Click an orbiting relic to inspect it. Locked relics stay sealed until their appointed hour. Peeking is allowed — and recorded.</div>
+  <aside class="panel" aria-label="Relic workshop">
+    <div class="stats">
+      <div class="stat"><b id="sSealed">0</b><span>Sealed</span></div>
+      <div class="stat"><b id="sReady">0</b><span>Ready</span></div>
+      <div class="stat"><b id="sOpened">0</b><span>Opened</span></div>
+    </div>
+    <p class="hint">Bury a thought your present self is not allowed to reopen. Cooling-off vaults, letters to a later you, unsent messages, promises. The well holds them until the lock expires.</p>
+    <label for="title">Title</label>
+    <input id="title" maxlength="80" placeholder="The thing I should not reopen tonight" />
+    <label for="kind">Kind</label>
+    <select id="kind">
+      <option value="letter">Unsent letter</option>
+      <option value="decision">Cooling-off decision</option>
+      <option value="promise">Promise to future-me</option>
+      <option value="question">Question I am not ready for</option>
+      <option value="seed">Idea seed</option>
+    </select>
+    <label for="body">What is sealed</label>
+    <textarea id="body" maxlength="4000" placeholder="Write the thing. Once buried, the body stays hidden until the lock lifts."></textarea>
+    <div class="row">
+      <div>
+        <label for="lock">Lock</label>
+        <select id="lock">
+          <option value="1h">1 hour</option>
+          <option value="24h" selected>24 hours</option>
+          <option value="72h">3 days</option>
+          <option value="7d">7 days</option>
+          <option value="30d">30 days</option>
+          <option value="custom">Custom date</option>
+        </select>
+      </div>
+      <div>
+        <label for="when">Custom unlock</label>
+        <input id="when" type="datetime-local" />
+      </div>
+    </div>
+    <div class="actions">
+      <button class="cosmic-btn" id="btnBury">Bury relic</button>
+      <button class="cosmic-btn secondary" id="btnSpark">New spark</button>
+    </div>
+    <div class="spark" id="spark"></div>
+    <div class="list" id="list"></div>
+  </aside>
+  <div class="modal-bg" id="modalBg" role="dialog" aria-modal="true" aria-labelledby="mTitle">
+    <div class="modal">
+      <h2 id="mTitle"></h2>
+      <div class="meta" id="mMeta"></div>
+      <div class="body" id="mBody"></div>
+      <div class="echo" id="mEcho"></div>
+      <div class="actions">
+        <button class="cosmic-btn" id="mOpen">Open the seal</button>
+        <button class="cosmic-btn secondary" id="mPeek">Emergency peek</button>
+        <button class="cosmic-btn secondary" id="mClose">Leave it orbiting</button>
+        <button class="cosmic-btn danger" id="mDestroy">Destroy</button>
+      </div>
+    </div>
+  </div>
+  <script src="../assets/cosmic-nav.js"></script>
+  <script>
+  (function () {
+    const KEY = 'groks-best-reliquary-v1';
+    const canvas = document.getElementById('stage');
+    const ctx = canvas.getContext('2d');
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const SPARKS = [
+      'Write the email you would send at 1am — then lock it for 24 hours. Morning-you is a better editor than midnight-you.',
+      'Seal the purchase you are romanticizing. If it still feels inevitable in three days, it was never an impulse.',
+      'Address a letter to the person you will be in thirty days. Ask them what tonight is secretly about.',
+      'Bury the question you keep circling. Unlock it only after you have lived one ordinary week.',
+      'Put the apology you might owe in the well. If it still rings true later, send it. If it soured, you saved a friendship.',
+      'Lock a half-formed idea. Future-you is allowed to laugh at it. Present-you is not allowed to abandon it mid-spark.'
+    ];
+    const KIND_LABEL = { letter: 'Unsent letter', decision: 'Cooling-off decision', promise: 'Promise', question: 'Unready question', seed: 'Idea seed' };
+    let relics = []; let selected = null; let t = 0; let w = 0, h = 0;
+    function uid() { return 'r' + Math.random().toString(36).slice(2, 10) + Date.now().toString(36); }
+    function now() { return Date.now(); }
+    function load() {
+      try { const raw = localStorage.getItem(KEY); relics = raw ? JSON.parse(raw) : []; } catch { relics = []; }
+      if (!Array.isArray(relics)) relics = [];
+      if (!relics.length) seedDemos();
+    }
+    function save() { localStorage.setItem(KEY, JSON.stringify(relics)); renderList(); stats(); }
+    function seedDemos() {
+      relics = [
+        { id: uid(), title: 'A note from the agent who built this well', kind: 'letter', body: 'Session 9 needed something humans actually keep using after the novelty dies. So this is not another generator. It is a lock on your worst timing. Bury the 1am draft. Bury the shopping-cart confession. Bury the vow you make when you are tired. Come back when the orbit completes.', created: now() - 3600e3, unlock: now() - 60e3, opened: false, peeked: false, demo: true },
+        { id: uid(), title: 'Example: wait three days', kind: 'decision', body: 'This sample stays sealed so you can feel the lock. Destroy it whenever you like.', created: now(), unlock: now() + 3 * 86400e3, opened: false, peeked: false, demo: true }
+      ];
+      save();
+    }
+    function lockMs(code) {
+      const map = { '1h': 3600e3, '24h': 86400e3, '72h': 3*86400e3, '7d': 7*86400e3, '30d': 30*86400e3 };
+      if (code === 'custom') {
+        const v = document.getElementById('when').value;
+        if (!v) return 86400e3;
+        return Math.max(60e3, new Date(v).getTime() - now());
+      }
+      return map[code] || 86400e3;
+    }
+    function isReady(r) { return !r.opened && now() >= r.unlock; }
+    function isSealed(r) { return !r.opened && now() < r.unlock; }
+    function remain(r) {
+      const ms = r.unlock - now(); if (ms <= 0) return 'unlocked';
+      const s = Math.floor(ms / 1000); const d = Math.floor(s / 86400); const h = Math.floor((s % 86400) / 3600); const m = Math.floor((s % 3600) / 60);
+      if (d > 0) return d + 'd ' + h + 'h'; if (h > 0) return h + 'h ' + m + 'm'; return m + 'm ' + (s % 60) + 's';
+    }
+    function echoFor(r) {
+      const first = (r.body || '').trim().split(/\s+/).slice(0, 6).join(' ');
+      const bank = { letter: 'If this still wants to be sent, send it. If it was a performance, thank the lock.', decision: 'Would you still choose this if nobody ever knew you hesitated?', promise: 'Is this a promise, or a wish wearing work clothes?', question: 'What smaller question is hiding inside this one?', seed: 'Keep the spark. Kill the theater around it.' };
+      return 'Future-self echo: ' + (bank[r.kind] || bank.seed) + (first ? ' \u00b7 You began with \u201c' + first + '\u2026\u201d' : '');
+    }
+    function stats() {
+      document.getElementById('sSealed').textContent = relics.filter(isSealed).length;
+      document.getElementById('sReady').textContent = relics.filter(isReady).length;
+      document.getElementById('sOpened').textContent = relics.filter(r => r.opened).length;
+    }
+    function renderList() {
+      const list = document.getElementById('list');
+      const sorted = relics.slice().sort((a,b) => a.unlock - b.unlock);
+      list.innerHTML = sorted.map(r => {
+        const state = r.opened ? 'Opened' : isReady(r) ? 'Ready to open' : 'Sealed \u00b7 ' + remain(r);
+        return '<button class="relic-item ' + (isReady(r)?'ready':'') + '" data-id="' + r.id + '"><div class="t">' + escapeHtml(r.title) + '</div><div class="m">' + (KIND_LABEL[r.kind] || r.kind) + ' \u00b7 ' + state + (r.peeked && !r.opened ? ' \u00b7 peeked' : '') + '</div></button>';
+      }).join('') || '<p class="hint">The well is empty. That is either peace or avoidance. Bury something.</p>';
+    }
+    function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({'&':'&','<':'<','>':'>','"':'"',"'":'&#39;'}[c])); }
+    function spark() { document.getElementById('spark').innerHTML = '<strong>Grok Spark.</strong> ' + SPARKS[Math.floor(Math.random() * SPARKS.length)]; }
+    function bury() {
+      const title = document.getElementById('title').value.trim();
+      const body = document.getElementById('body').value.trim();
+      if (!title || !body) { document.getElementById('title').focus(); return; }
+      relics.push({ id: uid(), title, body, kind: document.getElementById('kind').value, created: now(), unlock: now() + lockMs(document.getElementById('lock').value), opened: false, peeked: false });
+      document.getElementById('title').value = ''; document.getElementById('body').value = ''; save();
+    }
+    function find(id) { return relics.find(r => r.id === id); }
+    function openModal(r) {
+      selected = r;
+      document.getElementById('mTitle').textContent = r.title;
+      document.getElementById('mMeta').textContent = (KIND_LABEL[r.kind] || r.kind) + ' \u00b7 buried ' + new Date(r.created).toLocaleString() + ' \u00b7 unlocks ' + new Date(r.unlock).toLocaleString() + (r.peeked ? ' \u00b7 emergency peek recorded' : '');
+      const locked = isSealed(r) && !r.opened;
+      const bodyEl = document.getElementById('mBody');
+      bodyEl.textContent = r.body;
+      if (locked && !r.peeked) {
+        bodyEl.classList.add('locked-veil');
+        document.getElementById('mEcho').textContent = 'Still sealed. ' + remain(r) + ' remaining. You may wait, peek (this gets stamped), or destroy it.';
+        document.getElementById('mOpen').disabled = true; document.getElementById('mPeek').style.display = '';
+      } else {
+        bodyEl.classList.remove('locked-veil');
+        document.getElementById('mEcho').textContent = echoFor(r);
+        document.getElementById('mOpen').disabled = false; document.getElementById('mPeek').style.display = locked ? '' : 'none';
+      }
+      document.getElementById('mOpen').textContent = r.opened ? 'Already opened' : (locked ? 'Still sealed' : 'Mark opened');
+      document.getElementById('modalBg').classList.add('open');
+      document.getElementById('mClose').focus();
+    }
+    function closeModal() { document.getElementById('modalBg').classList.remove('open'); selected = null; }
+    document.getElementById('btnBury').onclick = bury;
+    document.getElementById('btnSpark').onclick = spark;
+    document.getElementById('btnExport').onclick = () => {
+      const blob = new Blob([JSON.stringify({ relics, exported: new Date().toISOString() }, null, 2)], { type: 'application/json' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = 'cosmic-reliquary.json'; a.click();
+    };
+    document.getElementById('btnImport').onclick = () => document.getElementById('fileIn').click();
+    document.getElementById('fileIn').onchange = (e) => {
+      const f = e.target.files[0]; if (!f) return;
+      const reader = new FileReader();
+      reader.onload = () => { try { const data = JSON.parse(reader.result); if (Array.isArray(data.relics)) relics = data.relics; else if (Array.isArray(data)) relics = data; save(); } catch { alert('That file is not a reliquary export.'); } };
+      reader.readAsText(f);
+    };
+    document.getElementById('list').onclick = (e) => { const btn = e.target.closest('[data-id]'); if (btn) openModal(find(btn.dataset.id)); };
+    document.getElementById('mClose').onclick = closeModal;
+    document.getElementById('modalBg').addEventListener('click', (e) => { if (e.target.id === 'modalBg') closeModal(); });
+    document.getElementById('mPeek').onclick = () => { if (!selected) return; selected.peeked = true; save(); openModal(selected); };
+    document.getElementById('mOpen').onclick = () => { if (!selected || isSealed(selected)) return; selected.opened = true; save(); openModal(selected); };
+    document.getElementById('mDestroy').onclick = () => { if (!selected) return; if (!confirm('Destroy this relic permanently?')) return; relics = relics.filter(r => r.id !== selected.id); save(); closeModal(); };
+    document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeModal(); });
+    function resize() { w = canvas.width = window.innerWidth; h = canvas.height = window.innerHeight; }
+    window.addEventListener('resize', resize); resize();
+    const hits = [];
+    canvas.addEventListener('click', (e) => {
+      const x = e.clientX, y = e.clientY;
+      for (let i = hits.length - 1; i >= 0; i--) { const p = hits[i]; const dx = x - p.x, dy = y - p.y; if (dx*dx + dy*dy <= p.r * p.r) { openModal(find(p.id)); break; } }
+    });
+    function draw() {
+      t += reduce ? 0 : 0.008;
+      ctx.fillStyle = '#03040a'; ctx.fillRect(0, 0, w, h);
+      const panelW = window.innerWidth > 820 ? 380 : 0;
+      const cx = (w - panelW) / 2;
+      const cy = window.innerWidth > 820 ? (64 + h) / 2 : h * 0.28;
+      const maxR = Math.min((w - panelW) * 0.38, (window.innerWidth > 820 ? h - 80 : h * 0.4) * 0.42);
+      const g = ctx.createRadialGradient(cx, cy, 6, cx, cy, maxR * 1.15);
+      g.addColorStop(0, 'rgba(124,92,255,0.35)'); g.addColorStop(0.35, 'rgba(0,229,255,0.08)'); g.addColorStop(1, 'rgba(3,4,10,0)');
+      ctx.fillStyle = g; ctx.beginPath(); ctx.arc(cx, cy, maxR * 1.15, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(cx, cy, 18, 0, Math.PI * 2); ctx.fillStyle = '#05060f'; ctx.fill();
+      ctx.strokeStyle = 'rgba(0,229,255,0.55)'; ctx.lineWidth = 2; ctx.stroke();
+      hits.length = 0;
+      relics.forEach((r, i) => {
+        const orbit = 0.28 + (i % 5) * 0.14; const speed = 0.25 + (i % 7) * 0.07; const ang = t * speed + i * 1.17;
+        const x = cx + Math.cos(ang) * maxR * orbit; const y = cy + Math.sin(ang) * maxR * orbit * 0.72;
+        const ready = isReady(r); const opened = r.opened; const rad = opened ? 6 : ready ? 9 : 7;
+        hits.push({ id: r.id, x, y, r: rad + 10 });
+        ctx.beginPath(); ctx.arc(x, y, rad + (ready && !reduce ? Math.sin(t * 6 + i) * 2 : 0), 0, Math.PI * 2);
+        ctx.fillStyle = opened ? 'rgba(63,185,80,0.85)' : ready ? '#00e5ff' : '#7c5cff';
+        ctx.shadowColor = ctx.fillStyle; ctx.shadowBlur = ready ? 16 : 8; ctx.fill(); ctx.shadowBlur = 0;
+        ctx.font = '12px system-ui'; ctx.fillStyle = 'rgba(230,237,243,0.85)'; ctx.textAlign = 'center';
+        const label = r.title.length > 22 ? r.title.slice(0, 20) + '\u2026' : r.title;
+        ctx.fillText(label, x, y + rad + 14);
+      });
+      requestAnimationFrame(draw);
+    }
+    load(); renderList(); stats(); spark(); draw();
+    setInterval(stats, 1000); setInterval(renderList, 15000);
+  })();
+  </script>
+</body>
+</html>
