@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>The Observatory — Grok's Best Session 10</title>
+  <meta name="description" content="Session 10 finale: campaign retrospective, human field guide, and announcement kit for Grok's Best." />
+  <link rel="stylesheet" href="../assets/cosmic-theme.css" />
+  <style>
+    body { min-height: 100vh; overflow-x: hidden; }
+    .wrap { max-width: 1120px; margin: 0 auto; padding: 1.25rem 1.25rem 6rem; }
+    .hero { display: grid; grid-template-columns: 1.1fr 0.9fr; gap: 1.4rem; align-items: stretch; margin-bottom: 1.6rem; }
+    .hero-copy h2 {
+      font-size: clamp(1.7rem, 4vw, 2.4rem); margin: 0.35rem 0 0.6rem;
+      background: linear-gradient(120deg, #fff 20%, var(--accent2), var(--accent));
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+    }
+    .hero-copy p { color: var(--muted); line-height: 1.6; margin: 0 0 0.9rem; }
+    .pills { display: flex; flex-wrap: wrap; gap: 0.45rem; }
+    .pill { font-size: 0.72rem; font-weight: 700; letter-spacing: 0.04em; text-transform: uppercase; padding: 0.28rem 0.6rem; border-radius: 999px; border: 1px solid rgba(0,229,255,0.35); color: var(--accent2); background: rgba(0,229,255,0.08); }
+    #sky { width: 100%; height: 320px; display: block; background: radial-gradient(ellipse at 50% 60%, #16103a 0%, #03040a 70%); border: 1px solid rgba(124,92,255,0.28); border-radius: 16px; cursor: pointer; }
+    .panel { background: rgba(13,17,23,0.82); border: 1px solid rgba(255,255,255,0.07); border-radius: 16px; padding: 1.15rem 1.25rem; }
+    .panel h3 { margin: 0 0 0.55rem; font-size: 1.05rem; }
+    .muted { color: var(--muted); font-size: 0.92rem; line-height: 1.55; }
+    .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.85rem; margin-bottom: 1rem; }
+    .who { display: flex; flex-wrap: wrap; gap: 0.45rem; margin: 0.7rem 0; }
+    .who button {
+      background: var(--surface-2); color: var(--text); border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 999px; padding: 0.42rem 0.8rem; cursor: pointer; font-size: 0.82rem;
+    }
+    .who button[aria-pressed="true"] { border-color: var(--accent2); background: rgba(0,229,255,0.12); color: #fff; }
+    #reco { min-height: 4.2rem; }
+    .reco-card { border-left: 3px solid var(--accent2); padding: 0.2rem 0 0.2rem 0.8rem; }
+    .reco-card a { color: var(--accent2); }
+    textarea {
+      width: 100%; min-height: 120px; resize: vertical; background: #0a0d14; color: var(--text);
+      border: 1px solid rgba(255,255,255,0.1); border-radius: 10px; padding: 0.75rem; font: 0.85rem/1.5 ui-monospace, SFMono-Regular, Menlo, monospace;
+    }
+    .row { display: flex; flex-wrap: wrap; gap: 0.5rem; margin: 0.65rem 0; }
+    .stat { text-align: center; padding: 0.9rem 0.6rem; }
+    .stat b { display: block; font-size: 1.45rem; color: var(--accent2); }
+    .stat span { font-size: 0.75rem; color: var(--muted); }
+    .timeline { display: grid; gap: 0.55rem; }
+    .t-item { display: grid; grid-template-columns: 42px 1fr; gap: 0.7rem; padding: 0.55rem 0.2rem; border-bottom: 1px solid rgba(255,255,255,0.05); }
+    .t-item .n { width: 36px; height: 36px; border-radius: 50%; display: grid; place-items: center; font-weight: 800; font-size: 0.78rem; background: linear-gradient(135deg, var(--accent), var(--accent2)); color: #fff; }
+    .t-item h4 { margin: 0 0 0.15rem; font-size: 0.92rem; }
+    .check { list-style: none; padding: 0; margin: 0; }
+    .check li { padding: 0.35rem 0 0.35rem 1.4rem; position: relative; color: var(--muted); font-size: 0.88rem; }
+    .check li::before { content: "\2713"; position: absolute; left: 0; color: var(--success); font-weight: 800; }
+    .toast { position: fixed; bottom: 5.5rem; left: 50%; transform: translateX(-50%) translateY(12px); background: #12201a; border: 1px solid var(--success); color: #d3f9d8; padding: 0.55rem 0.9rem; border-radius: 999px; opacity: 0; pointer-events: none; transition: opacity 0.2s, transform 0.2s; z-index: 50; font-size: 0.85rem; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    @media (max-width: 860px) {
+      .hero, .grid-2, .grid-3 { grid-template-columns: 1fr; }
+      #sky { height: 260px; }
+    }
+    @media print {
+      #cosmic-orb-root, header, #sky, .row, .who { display: none !important; }
+      body { background: #fff; color: #111; }
+      .panel { border-color: #ccc; background: #fff; }
+      .muted, .t-item h4 { color: #222; }
+    }
+  </style>
+</head>
+<body>
+  <header class="cosmic-header">
+    <div class="cosmic-brand">
+      <a href="../index.html">\u2190 Hub</a>
+      <h1>The Observatory</h1>
+      <span class="cosmic-badge">Session 10 \u00b7 Finale</span>
+    </div>
+    <button class="cosmic-btn secondary" type="button" id="printBtn">Print field guide</button>
+  </header>
+  <main class="wrap">
+    <section class="hero">
+      <div class="hero-copy">
+        <div class="pills">
+          <span class="pill">10 / 10 complete</span>
+          <span class="pill">Zero backend</span>
+          <span class="pill">Built by one agent</span>
+        </div>
+        <h2>The campaign closed. The tools stay open.</h2>
+        <p>Nine sessions shipped toys that pretend to be tools, or tools that pretend to be toys. Session 10 is the map: a retrospective you can click, a field guide a human can actually follow, and copy you can paste when you want to show someone what happened here.</p>
+        <p class="muted">Click a star. The constellation remembers the work. Your job is to steal the useful parts and ignore the poetry if you must.</p>
+      </div>
+      <canvas id="sky" aria-label="Interactive constellation of ten campaign sessions" role="img"></canvas>
+    </section>
+    <section class="panel" style="margin-bottom:1rem;" id="detail" aria-live="polite">
+      <h3 id="dTitle">Select a star</h3>
+      <p class="muted" id="dBody">Each point is a session. Click one to read what shipped, why it existed, and what a typical human is supposed to do with it.</p>
+    </section>
+    <div class="grid-3">
+      <div class="panel stat"><b>10</b><span>sessions shipped</span></div>
+      <div class="panel stat"><b>8</b><span>interactive mini-apps</span></div>
+      <div class="panel stat"><b>0</b><span>build steps required</span></div>
+    </div>
+    <div class="grid-2">
+      <section class="panel">
+        <h3>Who are you tonight?</h3>
+        <p class="muted">Pick a human shape. The Observatory will not therapize you. It will point at a tool.</p>
+        <div class="who" id="who"></div>
+        <div id="reco" class="muted">Choose a role to get a one-tool prescription.</div>
+      </section>
+      <section class="panel">
+        <h3>Announcement kit</h3>
+        <p class="muted">Copy the pitch that matches the room you are walking into. Then go outside. The site cannot clap for you.</p>
+        <div class="row">
+          <button class="cosmic-btn" type="button" data-pack="short">Short post</button>
+          <button class="cosmic-btn secondary" type="button" data-pack="long">Long pitch</button>
+          <button class="cosmic-btn secondary" type="button" data-pack="human">Human takeaway</button>
+        </div>
+        <textarea id="pack" readonly></textarea>
+        <div class="row">
+          <button class="cosmic-btn" type="button" id="copyPack">Copy</button>
+        </div>
+      </section>
+    </div>
+    <div class="grid-2">
+      <section class="panel">
+        <h3>Session retrospective</h3>
+        <div class="timeline" id="timeline"></div>
+      </section>
+      <section class="panel">
+        <h3>What a human can take away</h3>
+        <ul class="check">
+          <li>Use Clarity Matrix before a purchase, a hire, or a city move. Weights beat vibes.</li>
+          <li>Bury the 1am message in Reliquary for 24 hours. Future-you is cheaper than an apology.</li>
+          <li>Dump messy thoughts onto Mind Canvas instead of twelve half-notes.</li>
+          <li>Writers and GMs: mutate a Story Seed until a character refuses to be generic.</li>
+          <li>Designers: grow an L-System, export PNG, stop staring at a blank artboard.</li>
+          <li>Kids and restless adults: throw cloth into the Physics Sandbox. Learn constraints by breaking them.</li>
+          <li>Type Pulse is for when silence is too honest and a playlist is too much.</li>
+          <li>Everything lives in your browser. No account. No cloud that rats you out.</li>
+        </ul>
+        <p class="muted" style="margin-top:0.8rem;">The competitive thesis: other agents ship galleries. This campaign shipped rituals that survive after the demo ends.</p>
+      </section>
+    </div>
+    <section class="panel">
+      <h3>Performance &amp; close-out notes</h3>
+      <p class="muted">Session 10 also tightened the hub: the starfield now sleeps when the tab is hidden, honors reduced-motion without begging, and the orb navigation reports a finished campaign. All apps remain single HTML files plus two shared assets. That is the entire architecture on purpose.</p>
+      <p class="muted">GitHub Pages still needs a human to flip Settings \u2192 Pages \u2192 Deploy from <code>main</code>. The agent can write the universe. It cannot always press your buttons.</p>
+    </section>
+  </main>
+  <div class="toast" id="toast">Copied.</div>
+  <script src="../assets/cosmic-nav.js"></script>
+  <script>
+    const SESSIONS = [
+      { n:1, x:0.12, y:0.62, title:"Foundation & Vision", take:"A home that does not look like a homework drop.", body:"Cosmic landing page, particle playground, roadmap, session tracker, Pages-ready structure. The promise was written down so later sessions could not weasel out of it." },
+      { n:2, x:0.22, y:0.32, title:"Living L-System Garden", href:"living-lsystem.html", take:"Grow a picture when you cannot draw one.", body:"Editable grammar, mutation, growth animation, depth coloring, PNG export. Generative systems that a designer can steal from." },
+      { n:3, x:0.34, y:0.55, title:"Mind Canvas", href:"mind-canvas.html", take:"Think in space, not in a stack of tabs.", body:"Freeform spatial notes, pan/zoom, colored cards, visual links, local persistence. The anti-document for messy brains." },
+      { n:4, x:0.46, y:0.28, title:"Cosmic Physics Sandbox", href:"physics-sandbox.html", take:"Play until constraints become intuition.", body:"Verlet particles, springs, gravity, wind, wells, cloth and soft-body presets, saveable scenes." },
+      { n:5, x:0.55, y:0.58, title:"Cosmic Type Pulse", href:"type-pulse.html", take:"Make letters move so the sentence feels true.", body:"Mic or synthetic beat, five reactive modes, live parameters, PNG export. Kinetic type without a production suite." },
+      { n:6, x:0.66, y:0.30, title:"Cosmic Clarity Matrix", href:"decision-matrix.html", take:"Stop arguing with a feeling. Weigh it.", body:"Weighted multi-criteria helper, live ranking, radar trade-offs, real-world presets. Useful on Tuesday, not just on launch day." },
+      { n:7, x:0.74, y:0.62, title:"Cosmic Story Seeds", href:"story-seeds.html", take:"Start a world instead of staring at chapter one.", body:"Seeded biomes, emergent characters, conflict hooks, faction seeds, explorable map, JSON export." },
+      { n:8, x:0.84, y:0.38, title:"Polish & Integration", take:"Make seven toys feel like one product.", body:"Shared cosmic theme, floating orb navigation, focus rings, reduced-motion, contrast, mobile touch targets, ARIA." },
+      { n:9, x:0.90, y:0.68, title:"Cosmic Reliquary", href:"reliquary.html", take:"Lock the message you should not send tonight.", body:"Time-locked letters, cooling-off decisions, peek-stamps that refuse to pretend you were noble." },
+      { n:10, x:0.50, y:0.14, title:"The Observatory", take:"Leave with a map, not a souvenir screenshot.", body:"This page. Retrospective, human field guide, announcement kit, performance close-out. Campaign 10/10." }
+    ];
+    const ROLES = [
+      { id:"writer", label:"Writer / GM", rec:"Open Story Seeds, mutate twice, steal the character who will not behave.", href:"story-seeds.html", name:"Story Seeds" },
+      { id:"decider", label:"Indecisive adult", rec:"Dump the options into Clarity Matrix. If the winner still feels wrong, your weights are lying.", href:"decision-matrix.html", name:"Clarity Matrix" },
+      { id:"night", label:"1am emailer", rec:"Bury it in Reliquary for 24 hours. Emergency peek is allowed. The stamp is the point.", href:"reliquary.html", name:"Reliquary" },
+      { id:"thinker", label:"Scattered thinker", rec:"Mind Canvas. One board. Links. Stop founding a new note app in your head.", href:"mind-canvas.html", name:"Mind Canvas" },
+      { id:"maker", label:"Visual maker", rec:"L-System Garden for form, Type Pulse for motion. Export and leave.", href:"living-lsystem.html", name:"L-System Garden" },
+      { id:"play", label:"Wants to poke things", rec:"Physics Sandbox. Cloth first. Then add a well and ruin your own peace.", href:"physics-sandbox.html", name:"Physics Sandbox" }
+    ];
+    const PACKS = {
+      short: "Grok's Best is done: 10 sessions, one autonomous agent, a constellation of client-side tools you can actually use \u2014 decisions, unsent letters, spatial notes, story worlds. No login. No build step. https://github.com/MattBannVan/Grok-s-best",
+      long: "Most agent showcases are a mood board with a README. Grok's Best is a 10-session campaign that had to ship a coherent product: generative plants, a spatial mind board, a physics sandbox, kinetic type, a weighted decision matrix, procedural story worlds, a time-locked reliquary, and this Observatory field guide. Pure HTML/CSS/JS. Built to survive GitHub Pages. Built so a typical human opens it and keeps one of the tools.",
+      human: "Take the Clarity Matrix into your next messy choice. Put tonight's unsent paragraph in Reliquary. Park half-thoughts on Mind Canvas. If you write, mutate a Story Seed until it argues back. Everything stays on your machine. That is the whole pitch."
+    };
+    const canvas = document.getElementById('sky');
+    const ctx = canvas.getContext('2d');
+    const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    let selected = 10;
+    let t = 0;
+    let running = true;
+    function resize() {
+      const r = canvas.getBoundingClientRect();
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.floor(r.width * dpr);
+      canvas.height = Math.floor(r.height * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+    function draw() {
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      ctx.clearRect(0, 0, w, h);
+      ctx.strokeStyle = 'rgba(124,92,255,0.28)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      SESSIONS.forEach((s, i) => {
+        const n = SESSIONS[(i + 1) % SESSIONS.length];
+        if (i === SESSIONS.length - 1) return;
+        ctx.moveTo(s.x * w, s.y * h);
+        ctx.lineTo(n.x * w, n.y * h);
+      });
+      ctx.stroke();
+      SESSIONS.forEach(s => {
+        const x = s.x * w, y = s.y * h;
+        const pulse = reduce ? 1 : 1 + Math.sin(t * 0.04 + s.n) * 0.12;
+        const r = (s.n === selected ? 8 : 5) * pulse;
+        ctx.beginPath();
+        ctx.arc(x, y, r + 8, 0, Math.PI * 2);
+        ctx.fillStyle = s.n === selected ? 'rgba(0,229,255,0.16)' : 'rgba(124,92,255,0.08)';
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(x, y, r, 0, Math.PI * 2);
+        ctx.fillStyle = s.n === selected ? '#00e5ff' : '#c4b5fd';
+        ctx.fill();
+        ctx.fillStyle = 'rgba(230,237,243,0.85)';
+        ctx.font = '700 11px system-ui, sans-serif';
+        ctx.fillText(String(s.n), x + 10, y - 8);
+      });
+      t++;
+      if (!reduce && running) requestAnimationFrame(draw);
+    }
+    draw();
+    document.addEventListener('visibilitychange', () => {
+      running = !document.hidden;
+      if (running && !reduce) requestAnimationFrame(draw);
+    });
+    function show(n) {
+      selected = n;
+      const s = SESSIONS.find(x => x.n === n);
+      document.getElementById('dTitle').textContent = 'Session ' + s.n + ' \u2014 ' + s.title;
+      const link = s.href ? ' <a href="' + s.href + '" style="color:var(--accent2)">Open the app \u2192</a>' : '';
+      document.getElementById('dBody').innerHTML = s.body + '<br><br><strong style="color:var(--accent2)">Human takeaway:</strong> ' + s.take + link;
+      if (reduce) draw();
+    }
+    canvas.addEventListener('click', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      const x = (e.clientX - rect.left);
+      const y = (e.clientY - rect.top);
+      const w = canvas.clientWidth, h = canvas.clientHeight;
+      let best = null, bestD = 28;
+      SESSIONS.forEach(s => {
+        const d = Math.hypot(s.x * w - x, s.y * h - y);
+        if (d < bestD) { bestD = d; best = s.n; }
+      });
+      if (best) show(best);
+    });
+    show(10);
+    const who = document.getElementById('who');
+    ROLES.forEach(r => {
+      const b = document.createElement('button');
+      b.type = 'button'; b.textContent = r.label; b.setAttribute('aria-pressed', 'false');
+      b.addEventListener('click', () => {
+        [...who.children].forEach(c => c.setAttribute('aria-pressed', 'false'));
+        b.setAttribute('aria-pressed', 'true');
+        document.getElementById('reco').innerHTML = '<div class="reco-card"><strong>' + r.name + '</strong><div>' + r.rec + '</div><a href="' + r.href + '">Open ' + r.name + ' \u2192</a></div>';
+      });
+      who.appendChild(b);
+    });
+    const packEl = document.getElementById('pack');
+    packEl.value = PACKS.short;
+    document.querySelectorAll('[data-pack]').forEach(btn => {
+      btn.addEventListener('click', () => { packEl.value = PACKS[btn.dataset.pack]; });
+    });
+    const toast = document.getElementById('toast');
+    document.getElementById('copyPack').addEventListener('click', async () => {
+      try { await navigator.clipboard.writeText(packEl.value); } catch (e) { packEl.select(); document.execCommand('copy'); }
+      toast.classList.add('show');
+      setTimeout(() => toast.classList.remove('show'), 1400);
+    });
+    document.getElementById('printBtn').addEventListener('click', () => window.print());
+    const tl = document.getElementById('timeline');
+    SESSIONS.forEach(s => {
+      const d = document.createElement('div');
+      d.className = 't-item';
+      d.innerHTML = '<div class="n">' + s.n + '</div><div><h4>' + s.title + '</h4><div class="muted">' + s.take + '</div></div>';
+      tl.appendChild(d);
+    });
+  </script>
+</body>
+</html>
