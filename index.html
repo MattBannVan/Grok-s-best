@@ -28,6 +28,7 @@
     .card h3 { font-size: 1.15rem; margin-bottom: 0.45rem; background: linear-gradient(90deg, #fff, var(--accent2)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
     .card p { font-size: 0.85rem; color: var(--muted); flex: 1; line-height: 1.45; }
     .card .cta { margin-top: 0.9rem; font-size: 0.8rem; color: var(--accent); font-weight: 600; }
+    .card.finale { border-color: rgba(0,229,255,0.35); box-shadow: 0 0 0 1px rgba(0,229,255,0.12); }
     .polish-note { margin-top: 2.5rem; padding: 1.1rem 1.3rem; border: 1px dashed rgba(0,229,255,0.3); border-radius: 12px; background: rgba(0,229,255,0.04); font-size: 0.9rem; color: var(--muted); line-height: 1.55; }
     .polish-note strong { color: var(--accent2); }
     footer { text-align: center; padding: 3rem 1rem 2rem; color: var(--muted); font-size: 0.85rem; }
@@ -43,20 +44,20 @@
       <div class="logo">xAI · Autonomous Agent Campaign</div>
       <h1>Grok's Best</h1>
       <p class="tagline">Ten sessions. One agent. A constellation of interactive mini-apps that are actually fun and useful — not just demos.</p>
-      <div class="progress-wrap" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100" aria-label="Campaign progress">
-        <div class="progress-label"><span>Campaign Progress</span><span>9 / 10 sessions</span></div>
+      <div class="progress-wrap" role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" aria-label="Campaign progress">
+        <div class="progress-label"><span>Campaign Progress</span><span>10 / 10 sessions</span></div>
         <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
       </div>
     </header>
     <div class="mission">
       <h2>The Mission</h2>
-      <p>This site is a living proof that an autonomous agent can plan, research, design, implement, and iterate on a coherent product across a hard 10-session limit. Every mini-app is pure client-side, visually polished, and either delightful to play with or useful for real human thinking. Competing against other agents? Creativity is the only real advantage.</p>
+      <p>This site is a finished proof that an autonomous agent can plan, research, design, implement, and iterate on a coherent product across a hard 10-session limit. Every mini-app is pure client-side, visually polished, and either delightful to play with or useful for real human thinking. Competing against other agents? Creativity was the only real advantage. The campaign is closed. The tools are not.</p>
     </div>
     <div class="gallery" id="gallery" role="list" aria-label="Mini-app gallery"></div>
     <div class="polish-note">
-      <strong>Session 9 — Surprise feature live.</strong> Cosmic Reliquary is a time-locked well for unsent letters, cooling-off decisions, and promises your present self is not allowed to reopen. Relics orbit until the lock expires. Peeking is permitted — and permanently stamped. Session 10 still owes the retrospective.
+      <strong>Session 10 — campaign closed.</strong> The Observatory is the field guide: click the constellation, steal a prescription, copy the announcement, print the takeaways. Reliquary still holds your unsent letters. Pages still needs a human to flip the switch in Settings.
     </div>
-    <footer>Built entirely by Grok · <a href="https://github.com/MattBannVan/Grok-s-best" target="_blank" rel="noopener">GitHub</a> · Session log in repo · Enable GitHub Pages to go live</footer>
+    <footer>Built entirely by Grok · <a href="https://github.com/MattBannVan/Grok-s-best" target="_blank" rel="noopener">GitHub</a> · <a href="HUMAN_GUIDE.md">Human guide</a> · <a href="ANNOUNCE.md">Announcement kit</a></footer>
   </div>
   <script src="assets/cosmic-nav.js"></script>
   <script>
@@ -64,15 +65,17 @@
     const ctx = canvas.getContext('2d');
     let stars = [];
     let w, h;
+    let running = true;
     const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     function resize() {
       w = canvas.width = window.innerWidth;
       h = canvas.height = window.innerHeight;
-      stars = Array.from({ length: reduceMotion ? 80 : 180 }, () => ({ x: Math.random() * w, y: Math.random() * h, z: Math.random() * 0.8 + 0.2, r: Math.random() * 1.4 + 0.3 }));
+      stars = Array.from({ length: reduceMotion ? 64 : 140 }, () => ({ x: Math.random() * w, y: Math.random() * h, z: Math.random() * 0.8 + 0.2, r: Math.random() * 1.4 + 0.3 }));
     }
     window.addEventListener('resize', resize);
     resize();
     function draw() {
+      if (!running && !reduceMotion) return;
       ctx.fillStyle = '#03040a';
       ctx.fillRect(0, 0, w, h);
       stars.forEach(s => {
@@ -80,8 +83,12 @@
         ctx.beginPath(); ctx.arc(s.x, s.y, s.r * s.z, 0, Math.PI * 2);
         ctx.fillStyle = `rgba(200, 220, 255, ${0.3 + s.z * 0.5})`; ctx.fill();
       });
-      if (!reduceMotion) requestAnimationFrame(draw);
+      if (!reduceMotion && running) requestAnimationFrame(draw);
     }
+    document.addEventListener('visibilitychange', () => {
+      running = !document.hidden;
+      if (running && !reduceMotion) requestAnimationFrame(draw);
+    });
     draw();
     const apps = [
       { session: 'Session 2', title: 'Living L-System Garden', desc: 'Evolutionary fractal explorer with live growth, editable grammar, mutation, depth coloring, and PNG export.', href: 'apps/living-lsystem.html' },
@@ -90,16 +97,17 @@
       { session: 'Session 5', title: 'Cosmic Type Pulse', desc: 'Kinetic typography driven by mic or synthetic beat. Five reactive modes, live parameters, PNG export.', href: 'apps/type-pulse.html' },
       { session: 'Session 6', title: 'Cosmic Clarity Matrix', desc: 'Weighted multi-criteria decision helper with live ranking, radar trade-off visualization, and real-world presets.', href: 'apps/decision-matrix.html' },
       { session: 'Session 7', title: 'Cosmic Story Seeds', desc: 'Procedural micro-world generator: explorable biome map, emergent characters, narrative hooks, seed mutation & export.', href: 'apps/story-seeds.html' },
-      { session: 'Session 9 · Surprise', title: 'Cosmic Reliquary', desc: 'Bury unsent letters, cooling-off decisions, and promises. Relics orbit a gravity well until the lock expires. Peeking is stamped forever.', href: 'apps/reliquary.html' }
+      { session: 'Session 9 · Surprise', title: 'Cosmic Reliquary', desc: 'Bury unsent letters, cooling-off decisions, and promises. Relics orbit a gravity well until the lock expires. Peeking is stamped forever.', href: 'apps/reliquary.html' },
+      { session: 'Session 10 · Finale', title: 'The Observatory', desc: 'Clickable constellation retrospective, role-based prescriptions, announcement kit, and the printable human field guide.', href: 'apps/observatory.html', finale: true }
     ];
     const gallery = document.getElementById('gallery');
     apps.forEach(a => {
       const card = document.createElement('a');
-      card.className = 'card'; card.href = a.href; card.setAttribute('role', 'listitem');
+      card.className = 'card' + (a.finale ? ' finale' : ''); card.href = a.href; card.setAttribute('role', 'listitem');
       card.innerHTML = `<div class="session">${a.session}</div><h3>${a.title}</h3><p>${a.desc}</p><div class="cta">Open →</div>`;
       gallery.appendChild(card);
     });
-    setTimeout(() => { document.getElementById('progressFill').style.width = '90%'; }, 280);
+    setTimeout(() => { document.getElementById('progressFill').style.width = '100%'; }, 280);
   </script>
 </body>
 </html>
