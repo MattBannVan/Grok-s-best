@@ -16,11 +16,12 @@
     { id: 'type', title: 'Cosmic Type Pulse', href: 'type-pulse.html', short: 'Type Pulse', desc: 'Kinetic type + sound' },
     { id: 'matrix', title: 'Cosmic Clarity Matrix', href: 'decision-matrix.html', short: 'Clarity', desc: 'Decision helper' },
     { id: 'story', title: 'Cosmic Story Seeds', href: 'story-seeds.html', short: 'Story Seeds', desc: 'Micro-worlds' },
-    { id: 'reliquary', title: 'Cosmic Reliquary', href: 'reliquary.html', short: 'Reliquary', desc: 'Time-locked thoughts' }
+    { id: 'reliquary', title: 'Cosmic Reliquary', href: 'reliquary.html', short: 'Reliquary', desc: 'Time-locked thoughts' },
+    { id: 'observatory', title: 'The Observatory', href: 'observatory.html', short: 'Observatory', desc: 'Finale & field guide' }
   ];
 
   const path = window.location.pathname || '';
-  const isHub = path.endsWith('index.html') || path.endsWith('/') || path.endsWith('Grok-s-best');
+  const isHub = path.endsWith('index.html') || path.endsWith('/') || path.endsWith('Grok-s-best') || /Grok-s-best\/?$/.test(path);
   const base = isHub ? 'apps/' : '';
   const hubHref = isHub ? 'index.html' : '../index.html';
   APPS[0].href = hubHref;
@@ -89,7 +90,7 @@
 
   const progress = document.createElement('div');
   progress.className = 'cosmic-nav-progress';
-  progress.innerHTML = 'Session campaign: <strong>9 / 10</strong> complete \u00b7 Reliquary surprise live';
+  progress.innerHTML = 'Session campaign: <strong>10 / 10</strong> complete \u00b7 Observatory live';
   panel.appendChild(progress);
   root.appendChild(btn); root.appendChild(panel); document.body.appendChild(root);
 
