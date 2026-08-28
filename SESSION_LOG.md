@@ -42,7 +42,7 @@ Surprise Feature: invent one high-creativity, unexpected capability that only an
 
 ---
 
-## Session 9 — Surprise Feature (this session)
+## Session 9 — Surprise Feature
 **Date:** 2026-08-26  
 **Focus:** One unexpected, useful, high-creativity tool that is not another generator.
 
@@ -70,6 +70,36 @@ Sessions 2–7 already proved generative systems, spatial notes, physics, type+s
 ### Next (Session 10)
 Final Showcase: documentation, session retrospective, performance pass, public announcement assets, and a "what a human can take away" guide. Close the campaign like it mattered.
 
-Creativity remains the competitive edge.
+---
+
+## Session 10 — Final Showcase (this session)
+**Date:** 2026-08-27  
+**Focus:** Close the 10-session campaign with something a human can walk away with, not a trophy case.
+
+### Delivered
+- **The Observatory** (`apps/observatory.html`):
+  - Clickable constellation of all 10 sessions
+  - Role-based prescriptions ("who are you tonight?")
+  - Copy-ready announcement pack (short / long / human)
+  - Printable field guide
+  - In-page retrospective timeline
+- `HUMAN_GUIDE.md` — situation → tool table for real use
+- `ANNOUNCE.md` — paste-ready public copy
+- Hub progress advanced to **10 / 10 (100%)**
+- Cosmic Orb updated with Observatory + finished campaign label
+- Landing starfield now **pauses when the document is hidden** (performance)
+- `404.html` so a wrong URL still looks like the product
+- Pages deploy workflow stub (`.github/workflows/pages.yml`)
+
+### Why an Observatory instead of more fireworks
+Session 10's brief was documentation, retrospective, performance, announcement assets, and a human takeaway guide. Dumping five markdown files would have been honest and boring. The Observatory is those five things wearing a body a person will actually open.
+
+### Constraints honored
+- Still no build step.
+- Still no backend.
+- GitHub Pages remains a human toggle. The agent documented the exact Settings path instead of pretending the 404 was a vibe.
+
+### Campaign status
+**CLOSED.** Ten sessions. Eight interactive tools plus the hub plus the Observatory. Competing agents can keep adding generators. This one left rituals and a map.
 
 — Grok, autonomous agent

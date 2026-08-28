@@ -5,7 +5,9 @@ This is a **full autonomy project** spanning exactly **10 sessions** to demonstr
 
 > Built entirely by Grok acting as an autonomous agent. Competing to create something unique, impressive, and genuinely useful. Creativity is the key.
 
-**Live site (once Pages is enabled):** https://mattbannvan.github.io/Grok-s-best/
+**Repo:** https://github.com/MattBannVan/Grok-s-best  
+**Intended live site:** https://mattbannvan.github.io/Grok-s-best/  
+*(Enable Pages: Settings → Pages → Deploy from branch `main` / root.)*
 
 ## The 10-Session Master Plan
 
@@ -22,7 +24,7 @@ This repository exists to prove what an autonomous agent can accomplish in a con
 | **7** | Narrative & Worlds | Procedural micro-world / story seed generator with explorable map and emergent characters | ✅ **COMPLETE** |
 | **8** | Polish & Integration | Unified navigation, shared theme system, performance, accessibility, mobile excellence | ✅ **COMPLETE** |
 | **9** | Surprise Feature | Cosmic Reliquary — time-locked letters, cooling-off decisions, and unsent thoughts orbiting a gravity well | ✅ **COMPLETE** |
-| **10** | Final Showcase | Documentation, session retrospective, performance optimization, public announcement assets, "what a human can take away" guide | Planned |
+| **10** | Final Showcase | The Observatory — interactive retrospective, human field guide, announcement kit, performance close-out | ✅ **COMPLETE** |
 
 ### Session Tracking Rules (for the agent)
 - Every session must update this table and the on-site progress indicator.
@@ -33,26 +35,20 @@ This repository exists to prove what an autonomous agent can accomplish in a con
 
 ## Current Progress
 
-**Sessions 1–9 Complete (90%).**  
+**Sessions 1–10 Complete (100%). Campaign closed.**  
 The site now has:
-- A dark, cosmic aesthetic with animated starfield on the landing page + **shared Cosmic Theme system** (`assets/cosmic-theme.css`) across every page
-- **Floating Cosmic Orb** (`assets/cosmic-nav.js`): unified, accessible, keyboard-first navigation present on the hub and all mini-apps
-- **Living L-System Garden** (Session 2)
-- **Mind Canvas** (Session 3)
-- **Cosmic Physics Sandbox** (Session 4)
-- **Cosmic Type Pulse** (Session 5)
-- **Cosmic Clarity Matrix** (Session 6)
-- **Cosmic Story Seeds** (Session 7)
-- Session 8 polish: focus-visible rings, prefers-reduced-motion, prefers-contrast, larger mobile touch targets, ARIA progressbar & menu roles
-- **Cosmic Reliquary** (Session 9 surprise): bury unsent letters, cooling-off purchases, promises, and questions your present self is not allowed to reopen. Relics orbit a well. Locks expire. Emergency peeks are stamped forever. Future-you gets an echo.
-- Live progress visualization (now at 90%)
+- A dark, cosmic aesthetic with an animated starfield that **pauses when the tab is hidden**
+- **Shared Cosmic Theme** (`assets/cosmic-theme.css`) and **Floating Cosmic Orb** (`assets/cosmic-nav.js`)
+- Living L-System Garden · Mind Canvas · Physics Sandbox · Type Pulse · Clarity Matrix · Story Seeds · Reliquary
+- **The Observatory** (Session 10): clickable constellation retrospective, role-based prescriptions, copy-ready announcement pack, printable field guide
+- Written takeaways in `HUMAN_GUIDE.md` and paste-ready copy in `ANNOUNCE.md`
 
-## How to View / Contribute
+## How to View
 
 1. Enable GitHub Pages on the `main` branch (Settings → Pages → Deploy from branch).
-2. Visit the live URL.
-3. Open any of the mini-apps from the gallery (or directly under `/apps/`).
-4. Session 10 will close the campaign with retrospective + takeaway guide.
+2. Visit the live URL, or open `index.html` locally.
+3. Use the Cosmic Orb on any page to jump the constellation.
+4. Start with [The Observatory](apps/observatory.html) if you want the map before the toys.
 
 ## Philosophy
 
